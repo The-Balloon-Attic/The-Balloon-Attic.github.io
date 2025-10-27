@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 32 32">
+    <!-- Background balloons (behind) - slightly smaller and pink -->
+    <!-- Left background balloon -->
+    <ellipse cx="10" cy="12" rx="5.5" ry="6.5" fill="#f5c2b8" stroke="#d4a48a" stroke-width="0.4"/>
+    <ellipse cx="8.5" cy="9.5" rx="1.5" ry="2" fill="rgba(255,255,255,0.5)"/>
+    <path d="M10 18.5 Q9 20.5 10 22 Q11 23.5 10 24.5" stroke="#d4a48a" stroke-width="0.8" fill="none" stroke-linecap="round"/>
+    <!-- Right background balloon -->
+    <ellipse cx="22" cy="12" rx="5.5" ry="6.5" fill="#f5c2b8" stroke="#d4a48a" stroke-width="0.4"/>
+    <ellipse cx="23.5" cy="9.5" rx="1.5" ry="2" fill="rgba(255,255,255,0.5)"/>
+    <path d="M22 18.5 Q23 20.5 22 22 Q21 23.5 22 24.5" stroke="#d4a48a" stroke-width="0.8" fill="none" stroke-linecap="round"/>
+    <!-- Main balloon (front) - purple -->
+    <ellipse cx="16" cy="14" rx="7" ry="8.5" fill="#b084a6" stroke="#8b6a85" stroke-width="0.5"/>
+    <ellipse cx="13.5" cy="11.5" rx="2" ry="2.5" fill="rgba(255,255,255,0.6)"/>
+    <path d="M16 22.5 Q14 25 16 27 Q18 29 16 30" stroke="#8b6a85" stroke-width="1" fill="none" stroke-linecap="round"/>
+</svg>

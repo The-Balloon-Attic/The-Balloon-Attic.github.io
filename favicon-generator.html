@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Balloon Favicon Generator</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px;
+            background: #f2d5d8;
+        }
+        canvas { 
+            border: 2px solid #b084a6; 
+            margin: 10px; 
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .canvas-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .canvas-item {
+            text-align: center;
+        }
+        .canvas-item h3 {
+            margin: 10px 0 5px 0;
+            color: #5a4b56;
+        }
+        button {
+            background: #b084a6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #8b6a85;
+        }
+        .instructions {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>🎈 Balloon Attic Favicon Generator</h1>
+    
+    <div class="instructions">
+        <h2>Instructions:</h2>
+        <ol>
+            <li>Click "Generate All Favicons" below</li>
+            <li>Right-click on each canvas image</li>
+            <li>Select "Save image as..." or "Download image"</li>
+            <li>Save with the exact filenames shown below each image</li>
+            <li>Upload these files to your website root directory</li>
+        </ol>
+    </div>
+    
+    <button onclick="generateAllFavicons()" style="font-size: 16px; padding: 15px 30px;">
+        🎈 Generate All Favicons
+    </button>
+    
+    <div class="canvas-container">
+        <div class="canvas-item">
+            <h3>16x16 Favicon</h3>
+            <canvas id="favicon16" width="16" height="16"></canvas>
+            <p><strong>Save as:</strong> favicon-16x16.png</p>
+        </div>
+        
+        <div class="canvas-item">
+            <h3>32x32 Favicon</h3>
+            <canvas id="favicon32" width="32" height="32"></canvas>
+            <p><strong>Save as:</strong> favicon-32x32.png</p>
+        </div>
+        
+        <div class="canvas-item">
+            <h3>180x180 Apple Touch Icon</h3>
+            <canvas id="favicon180" width="180" height="180"></canvas>
+            <p><strong>Save as:</strong> apple-touch-icon.png</p>
+        </div>
+    </div>
+    
+    <script>
+        function drawBalloonFavicon(canvas, size) {
+            const ctx = canvas.getContext('2d');
+            const scale = size / 32;
+            
+            // Clear canvas with transparent background
+            ctx.clearRect(0, 0, size, size);
+            
+            // Background balloons (behind) - pink
+            // Left background balloon
+            ctx.fillStyle = '#f5c2b8';
+            ctx.beginPath();
+            ctx.ellipse(size * 0.31, size * 0.375, size * 0.17, size * 0.2, 0, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            if (size >= 32) {
+                ctx.strokeStyle = '#d4a48a';
+                ctx.lineWidth = Math.max(0.4, 0.5 * scale);
+                ctx.stroke();
+            }
+            
+            // Left balloon highlight
+            ctx.fillStyle = 'rgba(255,255,255,0.5)';
+            ctx.beginPath();
+            ctx.ellipse(size * 0.27, size * 0.3, size * 0.047, size * 0.063, 0, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Right background balloon (for larger sizes)
+            if (size >= 32) {
+                ctx.fillStyle = '#f5c2b8';
+                ctx.beginPath();
+                ctx.ellipse(size * 0.69, size * 0.375, size * 0.17, size * 0.2, 0, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                ctx.strokeStyle = '#d4a48a';
+                ctx.lineWidth = Math.max(0.4, 0.5 * scale);
+                ctx.stroke();
+                
+                // Right balloon highlight
+                ctx.fillStyle = 'rgba(255,255,255,0.5)';
+                ctx.beginPath();
+                ctx.ellipse(size * 0.73, size * 0.3, size * 0.047, size * 0.063, 0, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+            
+            // Main balloon (front) - purple
+            ctx.fillStyle = '#b084a6';
+            ctx.beginPath();
+            ctx.ellipse(size/2, size * 0.44, size * 0.22, size * 0.27, 0, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Main balloon outline
+            if (size >= 32) {
+                ctx.strokeStyle = '#8b6a85';
+                ctx.lineWidth = Math.max(0.5, 1 * scale);
+                ctx.stroke();
+            }
+            
+            // Main balloon highlight
+            ctx.fillStyle = 'rgba(255,255,255,0.6)';
+            ctx.beginPath();
+            ctx.ellipse(size * 0.42, size * 0.36, size * 0.063, size * 0.078, 0, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Balloon strings
+            ctx.lineCap = 'round';
+            
+            // Left balloon string
+            ctx.strokeStyle = '#d4a48a';
+            ctx.lineWidth = Math.max(0.8, 1 * scale);
+            ctx.beginPath();
+            ctx.moveTo(size * 0.31, size * 0.58);
+            if (size >= 32) {
+                ctx.quadraticCurveTo(size * 0.28, size * 0.64, size * 0.31, size * 0.69);
+                ctx.quadraticCurveTo(size * 0.34, size * 0.73, size * 0.31, size * 0.77);
+            } else {
+                ctx.lineTo(size * 0.29, size * 0.72);
+            }
+            ctx.stroke();
+            
+            // Right balloon string (for larger sizes)
+            if (size >= 32) {
+                ctx.strokeStyle = '#d4a48a';
+                ctx.lineWidth = Math.max(0.8, 1 * scale);
+                ctx.beginPath();
+                ctx.moveTo(size * 0.69, size * 0.58);
+                ctx.quadraticCurveTo(size * 0.72, size * 0.64, size * 0.69, size * 0.69);
+                ctx.quadraticCurveTo(size * 0.66, size * 0.73, size * 0.69, size * 0.77);
+                ctx.stroke();
+            }
+            
+            // Main balloon string (curved)
+            ctx.strokeStyle = '#8b6a85';
+            ctx.lineWidth = Math.max(1, 1.5 * scale);
+            ctx.beginPath();
+            ctx.moveTo(size/2, size * 0.7);
+            
+            if (size >= 32) {
+                ctx.quadraticCurveTo(size * 0.44, size * 0.78, size/2, size * 0.84);
+                ctx.quadraticCurveTo(size * 0.56, size * 0.91, size/2, size * 0.94);
+            } else {
+                ctx.lineTo(size * 0.47, size * 0.88);
+            }
+            ctx.stroke();
+        }
+        
+        function generateAllFavicons() {
+            drawBalloonFavicon(document.getElementById('favicon16'), 16);
+            drawBalloonFavicon(document.getElementById('favicon32'), 32);
+            drawBalloonFavicon(document.getElementById('favicon180'), 180);
+            
+            document.querySelector('button').textContent = '✅ Favicons Generated! Right-click to save each image.';
+            document.querySelector('button').style.background = '#5cb85c';
+        }
+        
+        // Add download functionality
+        function addDownloadButtons() {
+            const canvases = document.querySelectorAll('canvas');
+            canvases.forEach((canvas, index) => {
+                const filenames = ['favicon-16x16.png', 'favicon-32x32.png', 'apple-touch-icon.png'];
+                const button = document.createElement('button');
+                button.textContent = 'Download ' + filenames[index];
+                button.onclick = () => {
+                    const link = document.createElement('a');
+                    link.download = filenames[index];
+                    link.href = canvas.toDataURL();
+                    link.click();
+                };
+                canvas.parentNode.appendChild(button);
+            });
+        }
+        
+        // Add download buttons after page loads
+        window.onload = addDownloadButtons;
+    </script>
+</body>
+</html>

@@ -21,43 +21,31 @@ body {
 
 /* CSS Custom Properties - Design System */
 :root {
-    /* Color Palette - Based on Radix UI colors */
-    --color-slate-1: #fcfcfd;
-    --color-slate-2: #f8fafc;
-    --color-slate-3: #f1f5f9;
-    --color-slate-4: #e2e8f0;
-    --color-slate-5: #cbd5e1;
-    --color-slate-6: #94a3b8;
-    --color-slate-7: #64748b;
-    --color-slate-8: #475569;
-    --color-slate-9: #334155;
-    --color-slate-10: #1e293b;
-    --color-slate-11: #0f172a;
-    --color-slate-12: #020617;
-
-    --color-blue-1: #fbfdff;
-    --color-blue-2: #f4faff;
-    --color-blue-3: #e6f4ff;
-    --color-blue-4: #b8e6ff;
-    --color-blue-5: #70d0ff;
-    --color-blue-6: #00a9ff;
-    --color-blue-7: #0088cc;
-    --color-blue-8: #0066cc;
-    --color-blue-9: #0052cc;
-    --color-blue-10: #003d99;
-    --color-blue-11: #002966;
-    --color-blue-12: #001433;
+    /* Color Palette - Based on The Balloon Attic brand colors */
+    --color-primary-pink: #f2d5d8;
+    --color-secondary-mint: #c5e5d3;
+    --color-accent-purple: #b084a6;
+    --color-accent-lavender: #d4c5d9;
+    --color-soft-peach: #f5c2b8;
+    --color-soft-yellow: #f5e6a8;
+    --color-light-blue: #b8d5e8;
+    --color-cream: #f8f5f0;
+    
+    /* Text colors */
+    --color-text-primary: #5a4b56;
+    --color-text-secondary: #7a6b76;
+    --color-text-muted: #9a8b96;
 
     /* Semantic Colors */
-    --color-background: #ffffff;
-    --color-foreground: #0f172a;
-    --color-card: #f8fafc;
-    --color-card-foreground: #0f172a;
-    --color-muted: #f1f5f9;
-    --color-muted-foreground: #64748b;
-    --color-accent: #0052cc;
+    --color-background: var(--color-primary-pink);
+    --color-foreground: var(--color-text-primary);
+    --color-card: var(--color-cream);
+    --color-card-foreground: var(--color-text-primary);
+    --color-muted: var(--color-accent-lavender);
+    --color-muted-foreground: var(--color-text-secondary);
+    --color-accent: var(--color-accent-purple);
     --color-accent-foreground: #ffffff;
-    --color-border: #e2e8f0;
+    --color-border: var(--color-accent-lavender);
 
     /* Typography */
     --font-script: 'Tangerine', cursive;
@@ -139,6 +127,7 @@ section {
     font-weight: 700;
     color: var(--color-foreground);
     margin-bottom: 0.5rem;
+    margin-top: 0;
     line-height: 0.9;
 }
 
@@ -149,6 +138,69 @@ section {
     color: var(--color-muted-foreground);
     text-transform: uppercase;
     letter-spacing: 0.2em;
+}
+
+/* Attic House Styles - Based on provided snippet */
+.attic-house {
+    position: relative;
+    margin: 0 auto 2rem;
+    opacity: 0;
+    animation: houseFadeIn 1s ease-out 0.5s forwards;
+}
+
+/* Responsive sizing for the drawing */
+.attic-svg {
+    width: min(320px, 80vw);
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Subtle line style to match the logo vibe */
+.stroke { 
+    stroke: var(--color-text-primary); 
+    stroke-width: 3.25; 
+    stroke-linecap: round; 
+    stroke-linejoin: round; 
+    fill: none; 
+}
+
+.fill-glass { 
+    fill: var(--color-cream); 
+    stroke: var(--color-text-primary); 
+    stroke-width: 2.25; 
+}
+
+.heart { 
+    fill: var(--color-accent-purple); 
+    filter: drop-shadow(0 2px 2px rgba(0,0,0,.08)); 
+}
+
+/* Idle micro‑animation */
+@keyframes heartbeat { 
+    0%, 100% { transform: scale(1); } 
+    50% { transform: scale(1.07); } 
+}
+
+.beat { 
+    transform-origin: center; 
+    animation: heartbeat 2.6s ease-in-out infinite; 
+}
+
+/* Hover accent */
+.attic-house:hover .heart { 
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,.12)); 
+}
+
+@keyframes houseFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Scroll Indicator */
@@ -183,7 +235,7 @@ section {
 
 /* Gallery Section */
 .gallery-section {
-    background-color: var(--color-card);
+    background-color: var(--color-accent-lavender);
     color: var(--color-card-foreground);
 }
 
@@ -228,7 +280,7 @@ section {
 
 /* About Section */
 .about-section {
-    background-color: var(--color-background);
+    background-color: var(--color-accent-lavender);
     color: var(--color-foreground);
 }
 
@@ -250,12 +302,12 @@ section {
 
 /* Contact Section */
 .contact-section {
-    background-color: var(--color-card);
-    color: var(--color-card-foreground);
+    background-color: var(--color-accent-purple);
+    color: #ffffff;
 }
 
 .contact-card {
-    background-color: var(--color-background);
+    background-color: var(--color-cream);
     color: var(--color-foreground);
     padding: 3rem 2rem;
     border-radius: var(--radius-xl);
@@ -296,7 +348,7 @@ section {
 .instagram-button:hover {
     transform: translateY(-2px) scale(1.05);
     box-shadow: var(--shadow-xl);
-    background-color: #003d99;
+    background-color: #8b6a85;
 }
 
 /* Section Headers */
@@ -329,7 +381,7 @@ section {
 /* Footer */
 .footer {
     padding: 2rem 0;
-    background-color: var(--color-background);
+    background-color: var(--color-cream);
     border-top: 1px solid var(--color-border);
 }
 
@@ -354,6 +406,10 @@ section {
     .instagram-button {
         padding: 0.75rem 1.5rem;
         font-size: 1rem;
+    }
+    
+    .attic-svg {
+        width: min(280px, 85vw);
     }
 }
 

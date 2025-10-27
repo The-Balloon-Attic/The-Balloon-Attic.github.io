@@ -354,7 +354,7 @@
 
 /* Selection Styles */
 ::selection {
-    background-color: rgba(0, 82, 204, 0.2);
+    background-color: rgba(176, 132, 166, 0.3);
     color: var(--color-foreground);
 }
 

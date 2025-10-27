@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Favicon Generator</title>
+</head>
+<body>
+    <canvas id="favicon16" width="16" height="16" style="border: 1px solid #ccc; margin: 10px;"></canvas>
+    <canvas id="favicon32" width="32" height="32" style="border: 1px solid #ccc; margin: 10px;"></canvas>
+    <canvas id="favicon180" width="180" height="180" style="border: 1px solid #ccc; margin: 10px;"></canvas>
+    
+    <script>
+        function drawBalloonFavicon(canvas, size) {
+            const ctx = canvas.getContext('2d');
+            const scale = size / 32;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, size, size);
+            
+            // Background circle
+            ctx.fillStyle = '#f2d5d8';
+            ctx.beginPath();
+            ctx.arc(size/2, size/2, size/2, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Main balloon
+            ctx.fillStyle = '#b084a6';
+            ctx.beginPath();
+            ctx.ellipse(size/2, size * 0.44, size * 0.22, size * 0.27, 0, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Balloon outline
+            ctx.strokeStyle = '#5a4b56';
+            ctx.lineWidth = 0.5 * scale;
+            ctx.stroke();
+            
+            // Balloon highlight
+            ctx.fillStyle = 'rgba(255,255,255,0.6)';
+            ctx.beginPath();
+            ctx.ellipse(size * 0.42, size * 0.36, size * 0.06, size * 0.08, 0, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Balloon string
+            ctx.strokeStyle = '#5a4b56';
+            ctx.lineWidth = 1 * scale;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(size/2, size * 0.7);
+            ctx.quadraticCurveTo(size * 0.44, size * 0.78, size/2, size * 0.84);
+            ctx.quadraticCurveTo(size * 0.56, size * 0.9, size/2, size * 0.94);
+            ctx.stroke();
+            
+            // Small decorative balloon
+            if (size >= 32) {
+                ctx.fillStyle = '#f5c2b8';
+                ctx.beginPath();
+                ctx.ellipse(size * 0.78, size * 0.25, size * 0.09, size * 0.11, 0, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                ctx.strokeStyle = '#5a4b56';
+                ctx.lineWidth = 0.3 * scale;
+                ctx.stroke();
+                
+                // Small highlight
+                ctx.fillStyle = 'rgba(255,255,255,0.5)';
+                ctx.beginPath();
+                ctx.ellipse(size * 0.73, size * 0.22, size * 0.025, size * 0.03, 0, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+        }
+        
+        // Draw favicons
+        drawBalloonFavicon(document.getElementById('favicon16'), 16);
+        drawBalloonFavicon(document.getElementById('favicon32'), 32);
+        drawBalloonFavicon(document.getElementById('favicon180'), 180);
+        
+        // Instructions
+        document.body.innerHTML += '<p>Right-click on each canvas and "Save image as..." to save as PNG files.</p>';
+        document.body.innerHTML += '<p>Save as: favicon-16x16.png, favicon-32x32.png, apple-touch-icon.png</p>';
+    </script>
+</body>
+</html>
