@@ -1,0 +1,263 @@
+/* Animations CSS */
+
+/* Keyframe Definitions */
+
+@keyframes heroFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes scrollIndicatorFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes scrollDot {
+    0%, 20% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(0.75rem);
+    }
+}
+
+@keyframes balloonFloat {
+    0%, 100% {
+        transform: translate(-50%, -50%) translateY(0);
+    }
+    50% {
+        transform: translate(-50%, -50%) translateY(-10px);
+    }
+}
+
+@keyframes balloonFadeIn {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) translateY(20px);
+    }
+    100% {
+        opacity: 0.9;
+        transform: translate(-50%, -50%) translateY(0);
+    }
+}
+
+@keyframes revealFromBottom {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+/* Balloon Containers */
+.balloons-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.balloons-desktop {
+    display: block;
+}
+
+.balloons-mobile {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .balloons-desktop {
+        display: none;
+    }
+    
+    .balloons-mobile {
+        display: block;
+    }
+}
+
+/* Balloon Styles */
+.balloon {
+    position: absolute;
+    pointer-events: none;
+    left: var(--x);
+    top: var(--y);
+    width: var(--size);
+    height: calc(var(--size) * 1.2);
+    transform: translate(-50%, -50%);
+    
+    /* Initial state */
+    opacity: 0;
+    
+    /* Create balloon shape using CSS */
+    background: var(--color);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    border: 1.5px solid #4a5568;
+    
+    /* Animation */
+    animation: 
+        balloonFadeIn 0.8s ease-out var(--delay) forwards,
+        balloonFloat var(--duration) ease-in-out calc(var(--delay) + 0.8s) infinite;
+}
+
+/* Balloon highlight */
+.balloon::before {
+    content: '';
+    position: absolute;
+    top: 25%;
+    left: 25%;
+    width: 25%;
+    height: 30%;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+    opacity: 0.6;
+}
+
+/* Balloon string */
+.balloon::after {
+    content: '';
+    position: absolute;
+    bottom: -15%;
+    left: 50%;
+    width: 1.5px;
+    height: 15%;
+    background: #4a5568;
+    transform: translateX(-50%);
+}
+
+/* Scroll Reveal Animation */
+.reveal-on-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.6s ease-out;
+}
+
+.reveal-on-scroll.revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Staggered reveal animations */
+.reveal-on-scroll[data-delay="0"].revealed {
+    transition-delay: 0ms;
+}
+
+.reveal-on-scroll[data-delay="100"].revealed {
+    transition-delay: 100ms;
+}
+
+.reveal-on-scroll[data-delay="200"].revealed {
+    transition-delay: 200ms;
+}
+
+.reveal-on-scroll[data-delay="300"].revealed {
+    transition-delay: 300ms;
+}
+
+.reveal-on-scroll[data-delay="400"].revealed {
+    transition-delay: 400ms;
+}
+
+.reveal-on-scroll[data-delay="500"].revealed {
+    transition-delay: 500ms;
+}
+
+/* Hover Animations */
+.gallery-item {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gallery-item:hover {
+    transform: translateY(-4px) scale(1.02);
+}
+
+.instagram-button {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.instagram-button:hover {
+    transform: translateY(-2px) scale(1.05);
+}
+
+.instagram-button:active {
+    transform: translateY(0) scale(1.02);
+}
+
+/* Loading Animation for Images */
+.gallery-item img {
+    transition: opacity 0.3s ease-out, transform 0.5s ease-out;
+}
+
+.gallery-item img[loading="lazy"] {
+    opacity: 0;
+}
+
+.gallery-item img.loaded {
+    opacity: 1;
+}
+
+/* Smooth Transitions */
+* {
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .balloon {
+        animation: balloonFadeIn 0.8s ease-out var(--delay) forwards !important;
+    }
+    
+    .scroll-dot {
+        animation: none !important;
+    }
+    
+    .reveal-on-scroll {
+        transition: opacity 0.3s ease-out !important;
+        transform: none !important;
+    }
+    
+    .gallery-item:hover {
+        transform: none !important;
+    }
+    
+    .instagram-button:hover {
+        transform: none !important;
+    }
+}
