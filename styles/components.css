@@ -155,6 +155,15 @@
     animation: spin 1s linear infinite;
 }
 
+/* Gallery Loading */
+.gallery-loading {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 2rem;
+    color: var(--color-muted-foreground);
+    font-style: italic;
+}
+
 @keyframes spin {
     to {
         transform: rotate(360deg);

@@ -116,6 +116,13 @@
     </section>
 
     <!-- Gallery Section -->
+    <!-- 
+    ✨ Fully Automatic Gallery:
+    • Just drop images into assets/images/ folder - no code changes needed!
+    • To set featured images (first 5), edit scripts/main.js lines 73-78
+    • System auto-discovers ALL images automatically
+    • Supports 100+ images with smart loading
+    -->
     <section id="gallery" class="gallery-section">
         <div class="container">
             <div class="section-header reveal-on-scroll">
@@ -123,25 +130,33 @@
                 <p class="section-subtitle">Browse our balloon artistry creations</p>
             </div>
 
-            <div class="gallery-grid">
-                <div class="gallery-item reveal-on-scroll" data-delay="0">
-                    <img src="assets/images/IMG_4520.jpeg" alt="Balloon arrangement 1" loading="lazy">
+            <div class="gallery-container">
+                <div class="gallery-wrapper">
+                    <!-- Navigation arrows -->
+                    <button class="gallery-nav gallery-nav-prev" id="gallery-prev" aria-label="Previous images">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="15,18 9,12 15,6"></polyline>
+                        </svg>
+                    </button>
+                    
+                    <div class="gallery-viewport">
+                        <div class="gallery-track" id="gallery-track">
+                            <!-- Gallery items will be dynamically loaded -->
+                            <div class="gallery-loading">
+                                <p>Loading gallery...</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="gallery-nav gallery-nav-next" id="gallery-next" aria-label="Next images">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9,18 15,12 9,6"></polyline>
+                        </svg>
+                    </button>
                 </div>
-                <div class="gallery-item reveal-on-scroll" data-delay="100">
-                    <img src="assets/images/IMG_4764.jpeg" alt="Balloon arrangement 2" loading="lazy">
-                </div>
-                <div class="gallery-item reveal-on-scroll" data-delay="200">
-                    <img src="assets/images/IMG_4801.jpeg" alt="Balloon arrangement 3" loading="lazy">
-                </div>
-                <div class="gallery-item reveal-on-scroll" data-delay="300">
-                    <img src="assets/images/IMG_5049.jpeg" alt="Balloon arrangement 4" loading="lazy">
-                </div>
-                <div class="gallery-item reveal-on-scroll" data-delay="400">
-                    <img src="assets/images/IMG_5180.jpeg" alt="Balloon arrangement 5" loading="lazy">
-                </div>
-                <div class="gallery-item reveal-on-scroll" data-delay="500">
-                    <img src="assets/images/IMG_5366.jpeg" alt="Balloon arrangement 6" loading="lazy">
-                </div>
+                
+                <!-- Gallery indicators -->
+                <div class="gallery-indicators" id="gallery-indicators"></div>
             </div>
         </div>
     </section>
