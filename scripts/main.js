@@ -76,7 +76,7 @@ function initializeImageGallery() {
                 'IMG_7202.jpeg', // 3rd position  
                 'IMG_6649.jpeg', // 1st position - your best photo 
                 'IMG_7147.jpeg', // 2nd position
-                'IMG_4801.jpeg'   // 5th position
+                'IMG_4520.jpeg'   // 5th position
             ],
 
             // � ORDERING OPTIONS for non-featured images:
@@ -95,7 +95,10 @@ function initializeImageGallery() {
             'IMG_4520.jpeg',
             'IMG_4764.jpeg',
             'IMG_4772.jpeg',
-            'IMG_4801.jpeg',
+            'IMG_7212.jpeg',
+            'IMG_7202.jpeg',
+            'IMG_6649.jpeg',
+            'IMG_7147.jpeg',
             'IMG_4875.jpeg',
             'IMG_4927.jpeg',
             'IMG_4982.jpeg',
