@@ -1,7 +1,7 @@
 // The Balloon Attic - JavaScript Functionality
 
 // DOM Content Loaded Event
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Initialize all functionality
     initializeScrollReveal();
     initializeImageGallery();
@@ -17,7 +17,7 @@ function initializeScrollReveal() {
         rootMargin: '0px 0px -50px 0px'
     };
 
-    const observer = new IntersectionObserver(function(entries) {
+    const observer = new IntersectionObserver(function (entries) {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('revealed');
@@ -41,13 +41,13 @@ function initializeImageGallery() {
     let itemsPerPage = getItemsPerPage(); // Dynamic based on screen size
     let allImages = [];
     let isTransitioning = false;
-    
+
     // Touch/swipe variables
     let startX = 0;
     let currentX = 0;
     let isDragging = false;
     let startTime = 0;
-    
+
     // DOM elements
     const galleryTrack = document.getElementById('gallery-track');
     const prevBtn = document.getElementById('gallery-prev');
@@ -72,13 +72,13 @@ function initializeImageGallery() {
             // 🌟 FEATURED IMAGES (Edit these to change your top 5)
             // These will always appear first, in this exact order
             featured: [
-                'IMG_5258.jpeg',  // 1st position - your best photo
-                'IMG_5366.jpeg',  // 2nd position
-                'IMG_5369.jpeg',  // 3rd position  
-                'IMG_5414.jpeg',  // 4th position
+                'IMG_7212.jpeg', // 4th position
+                'IMG_7202.jpeg', // 3rd position  
+                'IMG_6649.jpeg', // 1st position - your best photo 
+                'IMG_7147.jpeg', // 2nd position
                 'IMG_4801.jpeg'   // 5th position
             ],
-            
+
             // � ORDERING OPTIONS for non-featured images:
             // 'filename' - alphabetical by filename
             // 'date' - by number in filename (IMG_4520 comes before IMG_5180)
@@ -125,7 +125,7 @@ function initializeImageGallery() {
     async function discoverImages() {
         // Start with our known complete list
         const allImages = getAllImages();
-        
+
         console.log(`� Found ${allImages.length} images`);
         return allImages.sort();
     }
@@ -136,13 +136,13 @@ function initializeImageGallery() {
     // Function to load gallery images dynamically
     async function loadGalleryImages() {
         const loadingElement = galleryTrack.querySelector('.gallery-loading');
-        
+
         // Auto-discover all images first
         const discoveredImages = await discoverImages();
-        
+
         // Get gallery configuration
         const galleryConfig = createGalleryConfig();
-        
+
         // Add discovered images to config
         galleryConfig.allImages = discoveredImages;
 
@@ -214,7 +214,7 @@ function initializeImageGallery() {
 
         // Combine featured + remaining
         const finalOrder = [...organized, ...orderedRemaining];
-        
+
         // Log the final order for verification
         console.log('🎨 Gallery Order:', {
             featured: organized.length,
@@ -233,10 +233,10 @@ function initializeImageGallery() {
         const config = createGalleryConfig();
         if (newFeatured) config.featured = newFeatured;
         if (newOrderBy) config.orderBy = newOrderBy;
-        
+
         allImages = organizeImages(config);
         totalPages = Math.ceil(allImages.length / itemsPerPage);
-        
+
         createGalleryItems();
         createIndicators();
         currentPage = 0; // Reset to first page
@@ -246,21 +246,21 @@ function initializeImageGallery() {
     // Create gallery items
     function createGalleryItems() {
         galleryTrack.innerHTML = '';
-        
+
         allImages.forEach((filename, index) => {
             const galleryItem = document.createElement('div');
             galleryItem.className = 'gallery-item';
             galleryItem.setAttribute('data-index', index);
-            
+
             const img = document.createElement('img');
             img.src = `assets/images/${filename}`;
             img.alt = `Balloon arrangement ${index + 1}`;
             img.loading = 'eager'; // Load all images immediately
-            
+
             galleryItem.appendChild(img);
             galleryTrack.appendChild(galleryItem);
         });
-        
+
         // Reset transform to start position
         galleryTrack.style.transform = 'translateX(0px)';
     }
@@ -268,12 +268,12 @@ function initializeImageGallery() {
     // Create page indicators
     function createIndicators() {
         indicatorsContainer.innerHTML = '';
-        
+
         for (let i = 0; i < totalPages; i++) {
             const indicator = document.createElement('div');
             indicator.className = 'gallery-indicator';
             if (i === 0) indicator.classList.add('active');
-            
+
             indicator.addEventListener('click', () => goToPage(i));
             indicatorsContainer.appendChild(indicator);
         }
@@ -284,7 +284,7 @@ function initializeImageGallery() {
         // Calculate the transform offset based on viewport width
         // Move by exactly the width of the viewport (which shows exactly itemsPerPage items)
         let viewportWidth;
-        
+
         if (window.innerWidth <= 480) {
             // Small mobile: 3 items * 140px + 2 gaps * 12px = 444px
             viewportWidth = 3 * 140 + 2 * 12;
@@ -295,9 +295,9 @@ function initializeImageGallery() {
             // Desktop: 4 items * 200px + 3 gaps * 16px = 848px
             viewportWidth = 4 * 200 + 3 * 16;
         }
-        
+
         const translateX = -currentPage * viewportWidth;
-        
+
         // Apply transform to move the track
         galleryTrack.style.transform = `translateX(${translateX}px)`;
 
@@ -339,11 +339,11 @@ function initializeImageGallery() {
 
         // Keyboard navigation
         document.addEventListener('keydown', handleKeyDown);
-        
+
         // Window resize handler
         window.addEventListener('resize', handleResize);
     }
-    
+
     // Handle window resize
     function handleResize() {
         // Recalculate items per page
@@ -351,16 +351,16 @@ function initializeImageGallery() {
         if (newItemsPerPage !== itemsPerPage) {
             itemsPerPage = newItemsPerPage;
             totalPages = Math.ceil(allImages.length / itemsPerPage);
-            
+
             // Reset to first page if current page is now out of bounds
             if (currentPage >= totalPages) {
                 currentPage = totalPages - 1;
             }
-            
+
             // Recreate indicators
             createIndicators();
         }
-        
+
         // Recalculate and update gallery on resize
         updateGallery();
     }
@@ -368,7 +368,7 @@ function initializeImageGallery() {
     // Setup event listeners for gallery items (modal functionality)
     function setupGalleryItemListeners() {
         const allItems = galleryTrack.querySelectorAll('.gallery-item');
-        
+
         allItems.forEach(item => {
             // Remove existing listeners to prevent duplicates
             const newItem = item.cloneNode(true);
@@ -377,9 +377,9 @@ function initializeImageGallery() {
 
         // Re-get items after cloning
         const freshItems = galleryTrack.querySelectorAll('.gallery-item');
-        
+
         freshItems.forEach(item => {
-            item.addEventListener('click', function(e) {
+            item.addEventListener('click', function (e) {
                 if (!isDragging) {
                     const img = this.querySelector('img');
                     if (img) {
@@ -389,7 +389,7 @@ function initializeImageGallery() {
             });
 
             // Add keyboard navigation
-            item.addEventListener('keydown', function(e) {
+            item.addEventListener('keydown', function (e) {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
                     const img = this.querySelector('img');
@@ -438,10 +438,10 @@ function initializeImageGallery() {
 
     function handleTouchMove(e) {
         if (startX === 0) return;
-        
+
         currentX = e.touches[0].clientX;
         const diffX = startX - currentX;
-        
+
         if (Math.abs(diffX) > 10) {
             isDragging = true;
             e.preventDefault(); // Prevent scrolling
@@ -450,11 +450,11 @@ function initializeImageGallery() {
 
     function handleTouchEnd(e) {
         if (startX === 0) return;
-        
+
         const diffX = startX - currentX;
         const diffTime = Date.now() - startTime;
         const velocity = Math.abs(diffX) / diffTime;
-        
+
         // Determine if it's a swipe (minimum distance and velocity)
         if (Math.abs(diffX) > 50 || velocity > 0.5) {
             if (diffX > 0) {
@@ -465,7 +465,7 @@ function initializeImageGallery() {
                 goToPrevPage();
             }
         }
-        
+
         // Reset
         startX = 0;
         currentX = 0;
@@ -485,10 +485,10 @@ function initializeImageGallery() {
 
     function handleMouseMove(e) {
         if (startX === 0) return;
-        
+
         currentX = e.clientX;
         const diffX = startX - currentX;
-        
+
         if (Math.abs(diffX) > 10) {
             isDragging = true;
         }
@@ -496,11 +496,11 @@ function initializeImageGallery() {
 
     function handleMouseUp(e) {
         if (startX === 0) return;
-        
+
         const diffX = startX - currentX;
         const diffTime = Date.now() - startTime;
         const velocity = Math.abs(diffX) / diffTime;
-        
+
         // Determine if it's a drag (minimum distance and velocity)
         if (Math.abs(diffX) > 50 || velocity > 0.3) {
             if (diffX > 0) {
@@ -511,7 +511,7 @@ function initializeImageGallery() {
                 goToPrevPage();
             }
         }
-        
+
         // Reset
         startX = 0;
         currentX = 0;
@@ -523,8 +523,8 @@ function initializeImageGallery() {
     // Keyboard navigation
     function handleKeyDown(e) {
         if (modal.classList.contains('active')) return; // Don't interfere with modal
-        
-        switch(e.key) {
+
+        switch (e.key) {
             case 'ArrowLeft':
                 e.preventDefault();
                 goToPrevPage();
@@ -542,7 +542,7 @@ function initializeImageGallery() {
         modalImage.alt = imageAlt;
         modal.classList.add('active');
         document.body.style.overflow = 'hidden';
-        
+
         // Focus the close button for accessibility
         modalClose.focus();
     }
@@ -556,15 +556,15 @@ function initializeImageGallery() {
 
     // Setup modal event listeners
     modalClose.addEventListener('click', closeModal);
-    
-    modal.addEventListener('click', function(e) {
+
+    modal.addEventListener('click', function (e) {
         if (e.target === modal) {
             closeModal();
         }
     });
 
     // Keyboard navigation for modal
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function (e) {
         if (modal.classList.contains('active')) {
             if (e.key === 'Escape') {
                 closeModal();
@@ -584,21 +584,21 @@ function initializeCurrentYear() {
 // Lazy Loading for Images
 function initializeLazyLoading() {
     const images = document.querySelectorAll('img[loading="lazy"]');
-    
+
     if ('IntersectionObserver' in window) {
-        const imageObserver = new IntersectionObserver(function(entries, observer) {
+        const imageObserver = new IntersectionObserver(function (entries, observer) {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const img = entry.target;
-                    img.addEventListener('load', function() {
+                    img.addEventListener('load', function () {
                         img.classList.add('loaded');
                     });
-                    
+
                     // If image is already loaded (cached)
                     if (img.complete) {
                         img.classList.add('loaded');
                     }
-                    
+
                     observer.unobserve(img);
                 }
             });
@@ -618,26 +618,26 @@ function initializeLazyLoading() {
 // Smooth Scrolling for Anchor Links
 function initializeSmoothScrolling() {
     const anchorLinks = document.querySelectorAll('a[href^="#"]');
-    
+
     anchorLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
+        link.addEventListener('click', function (e) {
             const href = this.getAttribute('href');
-            
+
             // Handle empty hash or just #
             if (href === '#' || href === '#!') {
                 e.preventDefault();
                 return;
             }
-            
+
             const targetId = href.substring(1);
             const targetElement = document.getElementById(targetId);
-            
+
             if (targetElement) {
                 e.preventDefault();
-                
+
                 const offsetTop = targetElement.offsetTop;
                 const headerHeight = 0; // Adjust if you have a fixed header
-                
+
                 window.scrollTo({
                     top: offsetTop - headerHeight,
                     behavior: 'smooth'
@@ -668,7 +668,7 @@ function throttle(func, delay) {
     let lastExecTime = 0;
     return function (...args) {
         const currentTime = Date.now();
-        
+
         if (currentTime - lastExecTime > delay) {
             func.apply(this, args);
             lastExecTime = currentTime;
@@ -698,7 +698,7 @@ function initializePerformanceMonitoring() {
     // Report Web Vitals if available
     if ('web-vitals' in window) {
         const { getCLS, getFID, getFCP, getLCP, getTTFB } = window['web-vitals'];
-        
+
         getCLS(console.log);
         getFID(console.log);
         getFCP(console.log);
@@ -708,13 +708,13 @@ function initializePerformanceMonitoring() {
 }
 
 // Error handling
-window.addEventListener('error', function(e) {
+window.addEventListener('error', function (e) {
     console.error('JavaScript error:', e.error);
     // In production, you might want to send this to an error tracking service
 });
 
 // Handle unhandled promise rejections
-window.addEventListener('unhandledrejection', function(e) {
+window.addEventListener('unhandledrejection', function (e) {
     console.error('Unhandled promise rejection:', e.reason);
     // In production, you might want to send this to an error tracking service
 });
