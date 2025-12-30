@@ -33,14 +33,15 @@ function initializeScrollReveal() {
     });
 }
 
-// Image Gallery with Modal Functionality and Horizontal Scrolling
+// Image Gallery with Modal Functionality and Grid Modal
 function initializeImageGallery() {
     // Gallery state
-    let currentPage = 0;
-    let totalPages = 0;
-    let itemsPerPage = getItemsPerPage(); // Dynamic based on screen size
+    let currentIndex = 0;
     let allImages = [];
     let isTransitioning = false;
+    let gridPopulated = false;
+    let modalCurrentIndex = 0;
+    let modalOpenedFromGrid = false;
 
     // Touch/swipe variables
     let startX = 0;
@@ -49,13 +50,20 @@ function initializeImageGallery() {
     let startTime = 0;
 
     // DOM elements
-    const galleryTrack = document.getElementById('gallery-track');
-    const prevBtn = document.getElementById('gallery-prev');
-    const nextBtn = document.getElementById('gallery-next');
-    const indicatorsContainer = document.getElementById('gallery-indicators');
+    const singleView = document.getElementById('single-view');
+    const singleContainer = document.getElementById('single-container');
+    const gridContainer = document.getElementById('grid-container');
+    const singlePrevBtn = document.getElementById('single-prev');
+    const singleNextBtn = document.getElementById('single-next');
+    const singleIndicators = document.getElementById('single-indicators');
+    const gridToggleBtn = document.getElementById('grid-toggle');
+    const gridModal = document.getElementById('grid-modal');
+    const gridModalClose = document.getElementById('grid-modal-close');
     const modal = document.getElementById('image-modal');
     const modalImage = document.getElementById('modal-image');
     const modalClose = document.querySelector('.modal-close');
+    const modalPrevBtn = document.getElementById('modal-prev');
+    const modalNextBtn = document.getElementById('modal-next');
 
     // Get items per page based on screen size
     function getItemsPerPage() {
@@ -72,14 +80,14 @@ function initializeImageGallery() {
             // 🌟 FEATURED IMAGES (Edit these to change your top 5)
             // These will always appear first, in this exact order
             featured: [
-                'IMG_7212.jpeg', // 4th position
-                'IMG_7202.jpeg', // 3rd position  
-                'IMG_6649.jpeg', // 1st position - your best photo 
-                'IMG_7147.jpeg', // 2nd position
-                'IMG_4520.jpeg'   // 5th position
+                'IMG_7427.jpeg', // 1st position
+                'IMG_7212.jpeg', // 2nd 
+                'IMG_7147.jpeg', // 3rd
+                'IMG_7202.jpeg', // 4th 
+                'IMG_6649.jpeg', // 5th 
             ],
 
-            // � ORDERING OPTIONS for non-featured images:
+            // 📋 ORDERING OPTIONS for non-featured images:
             // 'filename' - alphabetical by filename
             // 'date' - by number in filename (IMG_4520 comes before IMG_5180)
             // 'random' - random order each page load
@@ -92,6 +100,7 @@ function initializeImageGallery() {
         // List of ALL images in your assets/images folder
         // Add new images here when you upload them, or the system will auto-discover most
         return [
+            'IMG_7427.jpeg',
             'IMG_4520.jpeg',
             'IMG_4764.jpeg',
             'IMG_4772.jpeg',
@@ -105,13 +114,11 @@ function initializeImageGallery() {
             'IMG_5049.jpeg',
             'IMG_5180.jpeg',
             'IMG_5249.jpeg',
-            'IMG_5258.jpeg',
             'IMG_5268.jpeg',
             'IMG_5272.jpeg',
             'IMG_5306.jpeg',
             'IMG_5366.jpeg',
             'IMG_5369.jpeg',
-            'IMG_5369.jpg',
             'IMG_5375.jpeg',
             'IMG_5413.jpeg',
             'IMG_5414.jpeg',
@@ -129,7 +136,7 @@ function initializeImageGallery() {
         // Start with our known complete list
         const allImages = getAllImages();
 
-        console.log(`� Found ${allImages.length} images`);
+        console.log(`🎨 Found ${allImages.length} images`);
         return allImages.sort();
     }
 
@@ -138,7 +145,7 @@ function initializeImageGallery() {
 
     // Function to load gallery images dynamically
     async function loadGalleryImages() {
-        const loadingElement = galleryTrack.querySelector('.gallery-loading');
+        const loadingElement = singleContainer.querySelector('.gallery-loading');
 
         // Auto-discover all images first
         const discoveredImages = await discoverImages();
@@ -152,19 +159,16 @@ function initializeImageGallery() {
         // Smart image ordering
         allImages = organizeImages(galleryConfig);
 
-        // Update items per page based on current screen size
-        itemsPerPage = getItemsPerPage();
-        totalPages = Math.ceil(allImages.length / itemsPerPage);
-
         // Clear loading message
         if (loadingElement) {
             loadingElement.remove();
         }
 
-        // Create all gallery items
-        createGalleryItems();
+        // Create gallery views
+        createSingleView();
+        createGridView();
         createIndicators();
-        updateGallery();
+        updateSingleView();
         setupEventListeners();
     }
 
@@ -231,203 +235,371 @@ function initializeImageGallery() {
         return finalOrder;
     }
 
-    // Utility function to easily reorder gallery (for future use)
-    function reorderGallery(newFeatured = null, newOrderBy = null) {
-        const config = createGalleryConfig();
-        if (newFeatured) config.featured = newFeatured;
-        if (newOrderBy) config.orderBy = newOrderBy;
-
-        allImages = organizeImages(config);
-        totalPages = Math.ceil(allImages.length / itemsPerPage);
-
-        createGalleryItems();
-        createIndicators();
-        currentPage = 0; // Reset to first page
-        updateGallery();
+    // Create single image view
+    function createSingleView() {
+        // Single view shows one image at a time
+        updateSingleImage();
     }
 
-    // Create gallery items
-    function createGalleryItems() {
-        galleryTrack.innerHTML = '';
+    // Update single image display
+    function updateSingleImage() {
+        if (allImages.length === 0) return;
 
-        allImages.forEach((filename, index) => {
-            const galleryItem = document.createElement('div');
-            galleryItem.className = 'gallery-item';
-            galleryItem.setAttribute('data-index', index);
+        const filename = allImages[currentIndex];
+        
+        // Create new image item
+        const singleItem = document.createElement('div');
+        singleItem.className = 'single-image-item loading';
 
-            const img = document.createElement('img');
-            img.src = `assets/images/${filename}`;
-            img.alt = `Balloon arrangement ${index + 1}`;
-            img.loading = 'eager'; // Load all images immediately
+        const img = document.createElement('img');
+        img.alt = `Balloon arrangement ${currentIndex + 1}`;
+        
+        // Handle image load
+        img.onload = () => {
+            singleItem.classList.remove('loading');
+            singleItem.classList.add('loaded');
+        };
+        
+        img.onerror = () => {
+            singleItem.classList.remove('loading');
+            singleItem.classList.add('error');
+        };
+        
+        // Set src after onload handler
+        img.src = `assets/images/${filename}`;
 
-            galleryItem.appendChild(img);
-            galleryTrack.appendChild(galleryItem);
+        singleItem.appendChild(img);
+        
+        // Clear and add new content
+        singleContainer.innerHTML = '';
+        singleContainer.appendChild(singleItem);
+
+        // Add click handler to open modal (full size)
+        singleItem.addEventListener('click', () => {
+            if (!isDragging) {
+                openModal(currentIndex);
+            }
         });
 
-        // Reset transform to start position
-        galleryTrack.style.transform = 'translateX(0px)';
+        // Add keyboard support
+        singleItem.setAttribute('tabindex', '0');
+        singleItem.setAttribute('role', 'button');
+        singleItem.setAttribute('aria-label', 'Open image in modal');
+        singleItem.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                openModal(currentIndex);
+            }
+        });
+        
+        // Update navigation buttons (never disable for infinite scroll)
+        if (singlePrevBtn) singlePrevBtn.disabled = false;
+        if (singleNextBtn) singleNextBtn.disabled = false;
     }
 
-    // Create page indicators
-    function createIndicators() {
-        indicatorsContainer.innerHTML = '';
+    // Create grid view with proper lazy loading using Intersection Observer
+    function createGridView() {
+        gridContainer.innerHTML = '';
 
-        for (let i = 0; i < totalPages; i++) {
+        allImages.forEach((filename, index) => {
+            const gridItem = document.createElement('div');
+            gridItem.className = 'grid-item loading';
+            gridItem.setAttribute('data-index', index);
+            gridItem.setAttribute('data-src', `assets/images/${filename}`);
+            
+            const img = document.createElement('img');
+            img.alt = `Balloon arrangement ${index + 1}`;
+            
+            // Handle image load
+            img.onload = () => {
+                gridItem.classList.remove('loading');
+                gridItem.classList.add('loaded');
+            };
+            
+            img.onerror = () => {
+                gridItem.classList.remove('loading');
+                gridItem.classList.add('error');
+            };
+            
+            // Don't set src yet - will be set by Intersection Observer
+            
+            gridItem.appendChild(img);
+            gridContainer.appendChild(gridItem);
+
+            // Add click handler to open modal (from grid)
+            gridItem.addEventListener('click', () => {
+                openModal(index, true);
+            });
+
+            // Add keyboard support
+            gridItem.setAttribute('tabindex', '0');
+            gridItem.setAttribute('role', 'button');
+            gridItem.setAttribute('aria-label', `Open image ${index + 1} in modal`);
+            gridItem.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    openModal(index);
+                }
+            });
+        });
+        
+        // Setup lazy loading observer for grid items
+        setupGridLazyLoading();
+    }
+    
+    // Lazy loading for grid images using Intersection Observer
+    function setupGridLazyLoading() {
+        const gridItems = gridContainer.querySelectorAll('.grid-item[data-src]');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const gridItem = entry.target;
+                    const img = gridItem.querySelector('img');
+                    const src = gridItem.getAttribute('data-src');
+                    
+                    if (src && img && !img.src) {
+                        img.src = src;
+                        gridItem.removeAttribute('data-src');
+                    }
+                    
+                    observer.unobserve(gridItem);
+                }
+            });
+        }, {
+            root: document.querySelector('.grid-modal-content'),
+            rootMargin: '100px',
+            threshold: 0
+        });
+        
+        gridItems.forEach(item => observer.observe(item));
+    }
+
+    // Create page indicators for single view
+    function createIndicators() {
+        singleIndicators.innerHTML = '';
+
+        allImages.forEach((_, index) => {
             const indicator = document.createElement('div');
             indicator.className = 'gallery-indicator';
-            if (i === 0) indicator.classList.add('active');
+            if (index === 0) indicator.classList.add('active');
 
-            indicator.addEventListener('click', () => goToPage(i));
-            indicatorsContainer.appendChild(indicator);
-        }
+            indicator.addEventListener('click', () => goToImage(index));
+            singleIndicators.appendChild(indicator);
+        });
     }
 
-    // Update gallery display
-    function updateGallery() {
-        // Calculate the transform offset based on viewport width
-        // Move by exactly the width of the viewport (which shows exactly itemsPerPage items)
-        let viewportWidth;
+    // Update single view display
+    function updateSingleView() {
+        updateSingleImage();
 
-        if (window.innerWidth <= 480) {
-            // Small mobile: 3 items * 140px + 2 gaps * 12px = 444px
-            viewportWidth = 3 * 140 + 2 * 12;
-        } else if (window.innerWidth <= 768) {
-            // Tablet: 4 items * 160px + 3 gaps * 12px = 676px
-            viewportWidth = 4 * 160 + 3 * 12;
-        } else {
-            // Desktop: 4 items * 200px + 3 gaps * 16px = 848px
-            viewportWidth = 4 * 200 + 3 * 16;
-        }
-
-        const translateX = -currentPage * viewportWidth;
-
-        // Apply transform to move the track
-        galleryTrack.style.transform = `translateX(${translateX}px)`;
-
-        // Update navigation buttons
-        prevBtn.disabled = currentPage === 0;
-        nextBtn.disabled = currentPage === totalPages - 1;
+        // Never disable buttons for infinite scroll
+        if (singlePrevBtn) singlePrevBtn.disabled = false;
+        if (singleNextBtn) singleNextBtn.disabled = false;
 
         // Update indicators
         document.querySelectorAll('.gallery-indicator').forEach((indicator, index) => {
-            indicator.classList.toggle('active', index === currentPage);
+            indicator.classList.toggle('active', index === currentIndex);
         });
-
-        // Re-initialize reveal animations and event listeners for visible items
-        initializeScrollReveal();
-        setupGalleryItemListeners();
     }
 
     // Setup event listeners
     function setupEventListeners() {
-        // Navigation buttons
-        prevBtn.addEventListener('click', goToPrevPage);
-        nextBtn.addEventListener('click', goToNextPage);
+        // Grid modal toggle button
+        if (gridToggleBtn) {
+            gridToggleBtn.addEventListener('click', openGridModal);
+        }
 
-        // Touch/swipe events
-        galleryTrack.addEventListener('touchstart', handleTouchStart, { passive: true });
-        galleryTrack.addEventListener('touchmove', handleTouchMove, { passive: false });
-        galleryTrack.addEventListener('touchend', handleTouchEnd, { passive: true });
+        // Grid modal close button
+        if (gridModalClose) {
+            gridModalClose.addEventListener('click', closeGridModal);
+        }
 
-        // Mouse events for desktop drag
-        galleryTrack.addEventListener('mousedown', handleMouseDown);
-        galleryTrack.addEventListener('mousemove', handleMouseMove);
-        galleryTrack.addEventListener('mouseup', handleMouseUp);
-        galleryTrack.addEventListener('mouseleave', handleMouseUp);
+        // Close grid modal on backdrop click
+        if (gridModal) {
+            gridModal.addEventListener('click', (e) => {
+                if (e.target === gridModal) {
+                    closeGridModal();
+                }
+            });
+        }
 
-        // Prevent context menu on long press
-        galleryTrack.addEventListener('contextmenu', (e) => {
-            if (isDragging) e.preventDefault();
-        });
+        // Single view navigation buttons
+        if (singlePrevBtn) {
+            singlePrevBtn.addEventListener('click', goToPrevImage);
+        }
+        if (singleNextBtn) {
+            singleNextBtn.addEventListener('click', goToNextImage);
+        }
+
+        // Touch/swipe events for single view
+        if (singleContainer) {
+            singleContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
+            singleContainer.addEventListener('touchmove', handleTouchMove, { passive: false });
+            singleContainer.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+            // Mouse events for desktop drag
+            singleContainer.addEventListener('mousedown', handleMouseDown);
+            singleContainer.addEventListener('mousemove', handleMouseMove);
+            singleContainer.addEventListener('mouseup', handleMouseUp);
+            singleContainer.addEventListener('mouseleave', handleMouseUp);
+        }
 
         // Keyboard navigation
         document.addEventListener('keydown', handleKeyDown);
 
-        // Window resize handler
-        window.addEventListener('resize', handleResize);
+        // Modal close
+        if (modalClose) {
+            modalClose.addEventListener('click', closeModal);
+        }
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+            
+            // Touch/swipe events for modal
+            modal.addEventListener('touchstart', handleModalTouchStart, { passive: true });
+            modal.addEventListener('touchmove', handleModalTouchMove, { passive: false });
+            modal.addEventListener('touchend', handleModalTouchEnd, { passive: true });
+        }
+        
+        // Modal navigation buttons
+        if (modalPrevBtn) {
+            modalPrevBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                navigateModalPrev();
+            });
+        }
+        if (modalNextBtn) {
+            modalNextBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                navigateModalNext();
+            });
+        }
     }
-
-    // Handle window resize
-    function handleResize() {
-        // Recalculate items per page
-        const newItemsPerPage = getItemsPerPage();
-        if (newItemsPerPage !== itemsPerPage) {
-            itemsPerPage = newItemsPerPage;
-            totalPages = Math.ceil(allImages.length / itemsPerPage);
-
-            // Reset to first page if current page is now out of bounds
-            if (currentPage >= totalPages) {
-                currentPage = totalPages - 1;
+    
+    // Modal touch/swipe handling
+    let modalStartX = 0;
+    let modalCurrentX = 0;
+    let modalIsDragging = false;
+    
+    function handleModalTouchStart(e) {
+        modalStartX = e.touches[0].clientX;
+        modalCurrentX = modalStartX;
+        modalIsDragging = false;
+    }
+    
+    function handleModalTouchMove(e) {
+        if (modalStartX === 0) return;
+        
+        modalCurrentX = e.touches[0].clientX;
+        const diffX = modalStartX - modalCurrentX;
+        
+        if (Math.abs(diffX) > 10) {
+            modalIsDragging = true;
+            e.preventDefault();
+        }
+    }
+    
+    function handleModalTouchEnd(e) {
+        if (modalStartX === 0) return;
+        
+        const diffX = modalStartX - modalCurrentX;
+        
+        // Minimum swipe distance
+        if (Math.abs(diffX) > 50) {
+            if (diffX > 0) {
+                // Swiped left, go to next
+                navigateModalNext();
+            } else {
+                // Swiped right, go to previous
+                navigateModalPrev();
             }
-
-            // Recreate indicators
-            createIndicators();
         }
-
-        // Recalculate and update gallery on resize
-        updateGallery();
+        
+        // Reset
+        modalStartX = 0;
+        modalCurrentX = 0;
+        setTimeout(() => {
+            modalIsDragging = false;
+        }, 100);
     }
 
-    // Setup event listeners for gallery items (modal functionality)
-    function setupGalleryItemListeners() {
-        const allItems = galleryTrack.querySelectorAll('.gallery-item');
+    // Open grid modal
+    function openGridModal() {
+        if (isTransitioning) return;
+        
+        // Populate grid if not already done
+        if (!gridPopulated) {
+            createGridView();
+            gridPopulated = true;
+        }
 
-        allItems.forEach(item => {
-            // Remove existing listeners to prevent duplicates
-            const newItem = item.cloneNode(true);
-            item.parentNode.replaceChild(newItem, item);
-        });
-
-        // Re-get items after cloning
-        const freshItems = galleryTrack.querySelectorAll('.gallery-item');
-
-        freshItems.forEach(item => {
-            item.addEventListener('click', function (e) {
-                if (!isDragging) {
-                    const img = this.querySelector('img');
-                    if (img) {
-                        openModal(img.src, img.alt);
-                    }
-                }
+        // Show modal
+        gridModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        
+        // Trigger entrance animation
+        requestAnimationFrame(() => {
+            gridModal.classList.add('visible');
+            
+            // Animate grid items with stagger
+            const gridItems = gridContainer.querySelectorAll('.grid-item');
+            gridItems.forEach((item, index) => {
+                item.classList.remove('visible');
+                setTimeout(() => {
+                    item.classList.add('visible');
+                }, index * 30);
             });
-
-            // Add keyboard navigation
-            item.addEventListener('keydown', function (e) {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    const img = this.querySelector('img');
-                    if (img) {
-                        openModal(img.src, img.alt);
-                    }
-                }
-            });
-
-            // Make gallery items focusable
-            item.setAttribute('tabindex', '0');
-            item.setAttribute('role', 'button');
-            item.setAttribute('aria-label', 'Open image in modal');
         });
     }
 
-    // Navigation functions
-    function goToPrevPage() {
-        if (currentPage > 0 && !isTransitioning) {
-            currentPage--;
-            updateGallery();
-        }
+    // Close grid modal
+    function closeGridModal() {
+        if (isTransitioning) return;
+        isTransitioning = true;
+
+        gridModal.classList.remove('visible');
+        gridModal.classList.add('closing');
+
+        setTimeout(() => {
+            gridModal.classList.remove('active', 'closing');
+            document.body.style.overflow = '';
+            isTransitioning = false;
+        }, 400);
     }
 
-    function goToNextPage() {
-        if (currentPage < totalPages - 1 && !isTransitioning) {
-            currentPage++;
-            updateGallery();
+    // Navigation functions with infinite scroll (wrap around)
+    function goToPrevImage() {
+        if (isTransitioning || allImages.length === 0) return;
+        
+        // Wrap around to last image if at the beginning
+        if (currentIndex === 0) {
+            currentIndex = allImages.length - 1;
+        } else {
+            currentIndex--;
         }
+        updateSingleView();
     }
 
-    function goToPage(pageIndex) {
-        if (pageIndex >= 0 && pageIndex < totalPages && !isTransitioning) {
-            currentPage = pageIndex;
-            updateGallery();
+    function goToNextImage() {
+        if (isTransitioning || allImages.length === 0) return;
+        
+        // Wrap around to first image if at the end
+        if (currentIndex === allImages.length - 1) {
+            currentIndex = 0;
+        } else {
+            currentIndex++;
+        }
+        updateSingleView();
+    }
+
+    function goToImage(index) {
+        if (index >= 0 && index < allImages.length && !isTransitioning) {
+            currentIndex = index;
+            updateSingleView();
         }
     }
 
@@ -461,11 +633,11 @@ function initializeImageGallery() {
         // Determine if it's a swipe (minimum distance and velocity)
         if (Math.abs(diffX) > 50 || velocity > 0.5) {
             if (diffX > 0) {
-                // Swiped left, go to next page
-                goToNextPage();
+                // Swiped left, go to next
+                goToNextImage();
             } else {
-                // Swiped right, go to previous page
-                goToPrevPage();
+                // Swiped right, go to previous
+                goToPrevImage();
             }
         }
 
@@ -507,11 +679,11 @@ function initializeImageGallery() {
         // Determine if it's a drag (minimum distance and velocity)
         if (Math.abs(diffX) > 50 || velocity > 0.3) {
             if (diffX > 0) {
-                // Dragged left, go to next page
-                goToNextPage();
+                // Dragged left, go to next
+                goToNextImage();
             } else {
-                // Dragged right, go to previous page
-                goToPrevPage();
+                // Dragged right, go to previous
+                goToPrevImage();
             }
         }
 
@@ -525,55 +697,103 @@ function initializeImageGallery() {
 
     // Keyboard navigation
     function handleKeyDown(e) {
-        if (modal.classList.contains('active')) return; // Don't interfere with modal
+        // Handle image modal navigation and escape
+        if (modal.classList.contains('active')) {
+            switch (e.key) {
+                case 'Escape':
+                    closeModal();
+                    break;
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    navigateModalPrev();
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    navigateModalNext();
+                    break;
+            }
+            return;
+        }
 
+        // Handle grid modal escape
+        if (gridModal.classList.contains('active')) {
+            if (e.key === 'Escape') {
+                closeGridModal();
+            }
+            return;
+        }
+
+        // Single view navigation
         switch (e.key) {
             case 'ArrowLeft':
                 e.preventDefault();
-                goToPrevPage();
+                goToPrevImage();
                 break;
             case 'ArrowRight':
                 e.preventDefault();
-                goToNextPage();
+                goToNextImage();
                 break;
         }
     }
 
-    // Modal functionality
-    function openModal(imageSrc, imageAlt) {
-        modalImage.src = imageSrc;
-        modalImage.alt = imageAlt;
+    // Modal functionality with navigation
+    function openModal(index, fromGrid = false) {
+        modalCurrentIndex = index;
+        modalOpenedFromGrid = fromGrid;
+        updateModalImage();
         modal.classList.add('active');
         document.body.style.overflow = 'hidden';
 
         // Focus the close button for accessibility
-        modalClose.focus();
+        if (modalClose) modalClose.focus();
+    }
+    
+    function updateModalImage() {
+        if (allImages.length === 0) return;
+        
+        const filename = allImages[modalCurrentIndex];
+        modalImage.src = `assets/images/${filename}`;
+        modalImage.alt = `Balloon arrangement ${modalCurrentIndex + 1}`;
+    }
+    
+    function navigateModalPrev() {
+        if (allImages.length === 0) return;
+        
+        // Wrap around to last image
+        if (modalCurrentIndex === 0) {
+            modalCurrentIndex = allImages.length - 1;
+        } else {
+            modalCurrentIndex--;
+        }
+        updateModalImage();
+    }
+    
+    function navigateModalNext() {
+        if (allImages.length === 0) return;
+        
+        // Wrap around to first image
+        if (modalCurrentIndex === allImages.length - 1) {
+            modalCurrentIndex = 0;
+        } else {
+            modalCurrentIndex++;
+        }
+        updateModalImage();
     }
 
     function closeModal() {
         modal.classList.remove('active');
-        document.body.style.overflow = '';
         modalImage.src = '';
         modalImage.alt = '';
+        
+        // If opened from grid, keep grid modal open
+        if (modalOpenedFromGrid && gridModal.classList.contains('active')) {
+            document.body.style.overflow = 'hidden'; // Keep overflow hidden for grid
+        } else {
+            document.body.style.overflow = '';
+        }
+        
+        modalOpenedFromGrid = false;
     }
-
-    // Setup modal event listeners
-    modalClose.addEventListener('click', closeModal);
-
-    modal.addEventListener('click', function (e) {
-        if (e.target === modal) {
-            closeModal();
-        }
-    });
-
-    // Keyboard navigation for modal
-    document.addEventListener('keydown', function (e) {
-        if (modal.classList.contains('active')) {
-            if (e.key === 'Escape') {
-                closeModal();
-            }
-        }
-    });
 }
 
 // Set current year in footer

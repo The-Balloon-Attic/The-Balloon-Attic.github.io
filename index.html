@@ -131,35 +131,65 @@
             </div>
 
             <div class="gallery-container">
-                <div class="gallery-wrapper">
-                    <!-- Navigation arrows -->
-                    <button class="gallery-nav gallery-nav-prev" id="gallery-prev" aria-label="Previous images">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="15,18 9,12 15,6"></polyline>
-                        </svg>
-                    </button>
-                    
-                    <div class="gallery-viewport">
-                        <div class="gallery-track" id="gallery-track">
-                            <!-- Gallery items will be dynamically loaded -->
-                            <div class="gallery-loading">
-                                <p>Loading gallery...</p>
+                <!-- Single Image View -->
+                <div class="single-view" id="single-view">
+                    <div class="single-wrapper">
+                        <!-- Navigation arrows -->
+                        <button class="gallery-nav gallery-nav-prev" id="single-prev" aria-label="Previous image">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="15,18 9,12 15,6"></polyline>
+                            </svg>
+                        </button>
+                        
+                        <div class="single-viewport">
+                            <div class="single-image-container" id="single-container">
+                                <!-- Single image will be displayed here -->
+                                <div class="gallery-loading">
+                                    <p>Loading gallery...</p>
+                                </div>
                             </div>
                         </div>
+                        
+                        <button class="gallery-nav gallery-nav-next" id="single-next" aria-label="Next image">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9,18 15,12 9,6"></polyline>
+                            </svg>
+                        </button>
                     </div>
                     
-                    <button class="gallery-nav gallery-nav-next" id="gallery-next" aria-label="Next images">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="9,18 15,12 9,6"></polyline>
+                    <!-- Gallery indicators -->
+                    <div class="gallery-indicators" id="single-indicators"></div>
+                </div>
+
+                <!-- Grid View Button (underneath single view) -->
+                <div class="gallery-controls">
+                    <button class="grid-toggle-btn" id="grid-toggle" aria-label="Open grid view">
+                        <svg class="grid-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7" rx="1"/>
+                            <rect x="14" y="3" width="7" height="7" rx="1"/>
+                            <rect x="3" y="14" width="7" height="7" rx="1"/>
+                            <rect x="14" y="14" width="7" height="7" rx="1"/>
                         </svg>
                     </button>
                 </div>
-                
-                <!-- Gallery indicators -->
-                <div class="gallery-indicators" id="gallery-indicators"></div>
             </div>
         </div>
     </section>
+
+    <!-- Grid View Modal -->
+    <div id="grid-modal" class="grid-modal">
+        <div class="grid-modal-content">
+            <button class="grid-modal-close" id="grid-modal-close" aria-label="Close grid view">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <div class="grid-container" id="grid-container">
+                <!-- Grid items will be dynamically loaded -->
+            </div>
+        </div>
+    </div>
 
     <!-- About Section -->
     <section id="about" class="about-section">
@@ -202,12 +232,22 @@
         </div>
     </footer>
 
-    <!-- Image Modal -->
+    <!-- Image Modal with Navigation -->
     <div id="image-modal" class="modal">
+        <span class="modal-close">&times;</span>
+        <button class="modal-nav modal-nav-prev" id="modal-prev" aria-label="Previous image">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15,18 9,12 15,6"></polyline>
+            </svg>
+        </button>
         <div class="modal-content">
-            <span class="modal-close">&times;</span>
             <img id="modal-image" src="" alt="">
         </div>
+        <button class="modal-nav modal-nav-next" id="modal-next" aria-label="Next image">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9,18 15,12 9,6"></polyline>
+            </svg>
+        </button>
     </div>
 
     <!-- Scripts -->
