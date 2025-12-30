@@ -120,7 +120,6 @@ function initializeImageGallery() {
             'IMG_5366.jpeg',
             'IMG_5369.jpeg',
             'IMG_5375.jpeg',
-            'IMG_5413.jpeg',
             'IMG_5414.jpeg',
             'IMG_5416.jpeg',
             'IMG_5420.jpeg',
