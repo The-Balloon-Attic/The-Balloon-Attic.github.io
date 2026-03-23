@@ -89,7 +89,7 @@ function initializeImageGallery() {
 
             // 📋 ORDERING OPTIONS for non-featured images:
             // 'filename' - alphabetical by filename
-            // 'date' - by number in filename (IMG_4520 comes before IMG_5180)
+            // 'date' - by number in filename, highest first (IMG_8587 before IMG_8020)
             // 'random' - random order each page load
             orderBy: 'date'
         };
@@ -206,11 +206,11 @@ function initializeImageGallery() {
                 orderedRemaining = remaining.sort();
                 break;
             case 'date':
-                // Extract numbers from filename for chronological ordering
+                // Extract numbers from filename and sort descending (highest first)
                 orderedRemaining = remaining.sort((a, b) => {
                     const numA = parseInt(a.match(/\d+/)?.[0] || '0');
                     const numB = parseInt(b.match(/\d+/)?.[0] || '0');
-                    return numA - numB;
+                    return numB - numA;
                 });
                 break;
             case 'random':
