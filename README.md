@@ -122,7 +122,7 @@ php -S localhost:8000
 
 ## 📞 Contact
 
-For business inquiries, visit [@the_balloonattic](https://www.instagram.com/the_balloonattic/) on Instagram.
+For business inquiries, visit [@theballoonatticwestcork](https://www.instagram.com/theballoonatticwestcork/) on Instagram.
 
 ## 📄 License
 
