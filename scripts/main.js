@@ -80,11 +80,11 @@ function initializeImageGallery() {
             // 🌟 FEATURED IMAGES (Edit these to change your top 5)
             // These will always appear first, in this exact order
             featured: [
-                'IMG_7427.jpeg', // 1st position
-                'IMG_7212.jpeg', // 2nd 
-                'IMG_7147.jpeg', // 3rd
-                'IMG_7202.jpeg', // 4th 
-                'IMG_6649.jpeg', // 5th 
+            'IMG_7881.jpeg', 
+            'IMG_7787.jpeg', 
+            'IMG_7913.jpeg',
+            'IMG_8020.jpeg',
+            'IMG_8359.jpeg',
             ],
 
             // 📋 ORDERING OPTIONS for non-featured images:
