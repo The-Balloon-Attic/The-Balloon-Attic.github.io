@@ -100,6 +100,12 @@ function initializeImageGallery() {
         // List of ALL images in your assets/images folder
         // Add new images here when you upload them, or the system will auto-discover most
         return [
+            'IMG_7787.jpeg',
+            'IMG_7881.jpeg',
+            'IMG_7913.jpeg',
+            'IMG_8020.jpeg',
+            'IMG_8359.jpeg',
+            'IMG_8587.jpeg',
             'IMG_7427.jpeg',
             'IMG_4520.jpeg',
             'IMG_4764.jpeg',
