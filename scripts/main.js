@@ -80,8 +80,8 @@ function initializeImageGallery() {
             // 🌟 FEATURED IMAGES (Edit these to change your top 5)
             // These will always appear first, in this exact order
             featured: [
-            'IMG_0581.jpeg', 
-            'IMG_0580.jpeg', 
+            'IMG_0581.jpeg',
+            'IMG_0580.jpeg',
             'IMG_0588.jpeg', 
             'IMG_0779.jpeg',
             'IMG_8020.jpeg',
