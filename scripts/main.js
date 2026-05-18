@@ -96,11 +96,18 @@ function initializeImageGallery() {
         };
     }
 
-    // Get all images from the folder - simple and direct approach
-    function getAllImages() {
-        // List of ALL images in your assets/images folder
-        // Add new images here when you upload them, or the system will auto-discover most
+    // Fallback image list used if manifest loading fails
+    function getFallbackImages() {
         return [
+            'IMG_0580.jpeg',
+            'IMG_0581.jpeg',
+            'IMG_0588.jpeg',
+            'IMG_0589.jpeg',
+            'IMG_0732.jpeg',
+            'IMG_0779.jpeg',
+            'IMG_4520.jpeg',
+            'IMG_4764.jpeg',
+            'IMG_4772.jpeg',
             'IMG_4875.jpeg',
             'IMG_4927.jpeg',
             'IMG_4982.jpeg',
@@ -140,13 +147,36 @@ function initializeImageGallery() {
         ];
     }
 
-    // Automatically discover additional images (for future expansion)
+    // Load images from manifest (static-site friendly), with fallback list
     async function discoverImages() {
-        // Start with our known complete list
-        const allImages = getAllImages();
+        try {
+            const response = await fetch('assets/images/manifest.json', { cache: 'no-cache' });
 
-        console.log(`🎨 Found ${allImages.length} images`);
-        return allImages.sort();
+            if (!response.ok) {
+                throw new Error(`Manifest fetch failed with status ${response.status}`);
+            }
+
+            const manifest = await response.json();
+            if (!Array.isArray(manifest)) {
+                throw new Error('Manifest format is invalid; expected an array of filenames');
+            }
+
+            const allowedExtensions = new Set(['jpeg', 'jpg', 'png', 'webp', 'gif', 'avif']);
+            const filtered = manifest.filter((name) => {
+                if (typeof name !== 'string') return false;
+                const parts = name.split('.');
+                const ext = parts[parts.length - 1]?.toLowerCase();
+                return allowedExtensions.has(ext);
+            });
+
+            console.log(`🎨 Loaded ${filtered.length} images from manifest`);
+            return filtered;
+        } catch (error) {
+            const fallback = getFallbackImages();
+            console.warn('⚠️ Could not load manifest, using fallback image list.', error);
+            console.log(`🎨 Loaded ${fallback.length} images from fallback list`);
+            return fallback;
+        }
     }
 
     // Initialize gallery
