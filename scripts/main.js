@@ -80,12 +80,12 @@ function initializeImageGallery() {
             // 🌟 FEATURED IMAGES (Edit these to change your top 5)
             // These will always appear first, in this exact order
             featured: [
-            'IMG_0581.jpeg',
-            'IMG_0580.jpeg',
-            'IMG_0588.jpeg', 
-            'IMG_0779.jpeg',
-            'IMG_8020.jpeg',
-            'IMG_8359.jpeg',
+                'IMG_0581.jpeg',
+                'IMG_0580.jpeg',
+                'IMG_0588.jpeg',
+                'IMG_0779.jpeg',
+                'IMG_8020.jpeg',
+                'IMG_8359.jpeg',
             ],
 
             // 📋 ORDERING OPTIONS for non-featured images:
@@ -101,20 +101,6 @@ function initializeImageGallery() {
         // List of ALL images in your assets/images folder
         // Add new images here when you upload them, or the system will auto-discover most
         return [
-            'IMG_7787.jpeg',
-            'IMG_7881.jpeg',
-            'IMG_7913.jpeg',
-            'IMG_8020.jpeg',
-            'IMG_8359.jpeg',
-            'IMG_8587.jpeg',
-            'IMG_7427.jpeg',
-            'IMG_4520.jpeg',
-            'IMG_4764.jpeg',
-            'IMG_4772.jpeg',
-            'IMG_7212.jpeg',
-            'IMG_7202.jpeg',
-            'IMG_6649.jpeg',
-            'IMG_7147.jpeg',
             'IMG_4875.jpeg',
             'IMG_4927.jpeg',
             'IMG_4982.jpeg',
@@ -130,10 +116,27 @@ function initializeImageGallery() {
             'IMG_5414.jpeg',
             'IMG_5416.jpeg',
             'IMG_5420.jpeg',
+            'IMG_6649.jpeg',
+            'IMG_7147.jpeg',
+            'IMG_7202.jpeg',
+            'IMG_7212.jpeg',
             'IMG_7323.jpeg',
             'IMG_7324.jpeg',
             'IMG_7325.jpeg',
-            'IMG_7326.jpeg'
+            'IMG_7326.jpeg',
+            'IMG_7427.jpeg',
+            'IMG_7787.jpeg',
+            'IMG_7881.jpeg',
+            'IMG_7913.jpeg',
+            'IMG_8020.jpeg',
+            'IMG_8359.jpeg',
+            'IMG_8587.jpeg',
+            'IMG_9525.jpeg',
+            'IMG_9531.jpeg',
+            'IMG_9543.jpeg',
+            'IMG_9576.jpeg',
+            'IMG_9629.jpeg',
+            'IMG_9633.jpeg'
         ];
     }
 
@@ -252,30 +255,30 @@ function initializeImageGallery() {
         if (allImages.length === 0) return;
 
         const filename = allImages[currentIndex];
-        
+
         // Create new image item
         const singleItem = document.createElement('div');
         singleItem.className = 'single-image-item loading';
 
         const img = document.createElement('img');
         img.alt = `Balloon arrangement ${currentIndex + 1}`;
-        
+
         // Handle image load
         img.onload = () => {
             singleItem.classList.remove('loading');
             singleItem.classList.add('loaded');
         };
-        
+
         img.onerror = () => {
             singleItem.classList.remove('loading');
             singleItem.classList.add('error');
         };
-        
+
         // Set src after onload handler
         img.src = `assets/images/${filename}`;
 
         singleItem.appendChild(img);
-        
+
         // Clear and add new content
         singleContainer.innerHTML = '';
         singleContainer.appendChild(singleItem);
@@ -297,7 +300,7 @@ function initializeImageGallery() {
                 openModal(currentIndex);
             }
         });
-        
+
         // Update navigation buttons (never disable for infinite scroll)
         if (singlePrevBtn) singlePrevBtn.disabled = false;
         if (singleNextBtn) singleNextBtn.disabled = false;
@@ -312,23 +315,23 @@ function initializeImageGallery() {
             gridItem.className = 'grid-item loading';
             gridItem.setAttribute('data-index', index);
             gridItem.setAttribute('data-src', `assets/images/${filename}`);
-            
+
             const img = document.createElement('img');
             img.alt = `Balloon arrangement ${index + 1}`;
-            
+
             // Handle image load
             img.onload = () => {
                 gridItem.classList.remove('loading');
                 gridItem.classList.add('loaded');
             };
-            
+
             img.onerror = () => {
                 gridItem.classList.remove('loading');
                 gridItem.classList.add('error');
             };
-            
+
             // Don't set src yet - will be set by Intersection Observer
-            
+
             gridItem.appendChild(img);
             gridContainer.appendChild(gridItem);
 
@@ -348,27 +351,27 @@ function initializeImageGallery() {
                 }
             });
         });
-        
+
         // Setup lazy loading observer for grid items
         setupGridLazyLoading();
     }
-    
+
     // Lazy loading for grid images using Intersection Observer
     function setupGridLazyLoading() {
         const gridItems = gridContainer.querySelectorAll('.grid-item[data-src]');
-        
+
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const gridItem = entry.target;
                     const img = gridItem.querySelector('img');
                     const src = gridItem.getAttribute('data-src');
-                    
+
                     if (src && img && !img.src) {
                         img.src = src;
                         gridItem.removeAttribute('data-src');
                     }
-                    
+
                     observer.unobserve(gridItem);
                 }
             });
@@ -377,7 +380,7 @@ function initializeImageGallery() {
             rootMargin: '100px',
             threshold: 0
         });
-        
+
         gridItems.forEach(item => observer.observe(item));
     }
 
@@ -464,13 +467,13 @@ function initializeImageGallery() {
                     closeModal();
                 }
             });
-            
+
             // Touch/swipe events for modal
             modal.addEventListener('touchstart', handleModalTouchStart, { passive: true });
             modal.addEventListener('touchmove', handleModalTouchMove, { passive: false });
             modal.addEventListener('touchend', handleModalTouchEnd, { passive: true });
         }
-        
+
         // Modal navigation buttons
         if (modalPrevBtn) {
             modalPrevBtn.addEventListener('click', (e) => {
@@ -485,35 +488,35 @@ function initializeImageGallery() {
             });
         }
     }
-    
+
     // Modal touch/swipe handling
     let modalStartX = 0;
     let modalCurrentX = 0;
     let modalIsDragging = false;
-    
+
     function handleModalTouchStart(e) {
         modalStartX = e.touches[0].clientX;
         modalCurrentX = modalStartX;
         modalIsDragging = false;
     }
-    
+
     function handleModalTouchMove(e) {
         if (modalStartX === 0) return;
-        
+
         modalCurrentX = e.touches[0].clientX;
         const diffX = modalStartX - modalCurrentX;
-        
+
         if (Math.abs(diffX) > 10) {
             modalIsDragging = true;
             e.preventDefault();
         }
     }
-    
+
     function handleModalTouchEnd(e) {
         if (modalStartX === 0) return;
-        
+
         const diffX = modalStartX - modalCurrentX;
-        
+
         // Minimum swipe distance
         if (Math.abs(diffX) > 50) {
             if (diffX > 0) {
@@ -524,7 +527,7 @@ function initializeImageGallery() {
                 navigateModalPrev();
             }
         }
-        
+
         // Reset
         modalStartX = 0;
         modalCurrentX = 0;
@@ -536,7 +539,7 @@ function initializeImageGallery() {
     // Open grid modal
     function openGridModal() {
         if (isTransitioning) return;
-        
+
         // Populate grid if not already done
         if (!gridPopulated) {
             createGridView();
@@ -546,11 +549,11 @@ function initializeImageGallery() {
         // Show modal
         gridModal.classList.add('active');
         document.body.style.overflow = 'hidden';
-        
+
         // Trigger entrance animation
         requestAnimationFrame(() => {
             gridModal.classList.add('visible');
-            
+
             // Animate grid items with stagger
             const gridItems = gridContainer.querySelectorAll('.grid-item');
             gridItems.forEach((item, index) => {
@@ -580,7 +583,7 @@ function initializeImageGallery() {
     // Navigation functions with infinite scroll (wrap around)
     function goToPrevImage() {
         if (isTransitioning || allImages.length === 0) return;
-        
+
         // Wrap around to last image if at the beginning
         if (currentIndex === 0) {
             currentIndex = allImages.length - 1;
@@ -592,7 +595,7 @@ function initializeImageGallery() {
 
     function goToNextImage() {
         if (isTransitioning || allImages.length === 0) return;
-        
+
         // Wrap around to first image if at the end
         if (currentIndex === allImages.length - 1) {
             currentIndex = 0;
@@ -753,18 +756,18 @@ function initializeImageGallery() {
         // Focus the close button for accessibility
         if (modalClose) modalClose.focus();
     }
-    
+
     function updateModalImage() {
         if (allImages.length === 0) return;
-        
+
         const filename = allImages[modalCurrentIndex];
         modalImage.src = `assets/images/${filename}`;
         modalImage.alt = `Balloon arrangement ${modalCurrentIndex + 1}`;
     }
-    
+
     function navigateModalPrev() {
         if (allImages.length === 0) return;
-        
+
         // Wrap around to last image
         if (modalCurrentIndex === 0) {
             modalCurrentIndex = allImages.length - 1;
@@ -773,10 +776,10 @@ function initializeImageGallery() {
         }
         updateModalImage();
     }
-    
+
     function navigateModalNext() {
         if (allImages.length === 0) return;
-        
+
         // Wrap around to first image
         if (modalCurrentIndex === allImages.length - 1) {
             modalCurrentIndex = 0;
@@ -790,14 +793,14 @@ function initializeImageGallery() {
         modal.classList.remove('active');
         modalImage.src = '';
         modalImage.alt = '';
-        
+
         // If opened from grid, keep grid modal open
         if (modalOpenedFromGrid && gridModal.classList.contains('active')) {
             document.body.style.overflow = 'hidden'; // Keep overflow hidden for grid
         } else {
             document.body.style.overflow = '';
         }
-        
+
         modalOpenedFromGrid = false;
     }
 }
