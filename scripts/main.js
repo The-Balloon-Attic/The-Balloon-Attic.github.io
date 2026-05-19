@@ -130,7 +130,6 @@ function initializeImageGallery() {
             'IMG_7323.jpeg',
             'IMG_7324.jpeg',
             'IMG_7325.jpeg',
-            'IMG_7326.jpeg',
             'IMG_7427.jpeg',
             'IMG_7787.jpeg',
             'IMG_7881.jpeg',
