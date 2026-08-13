@@ -33,141 +33,119 @@ function initializeScrollReveal() {
     });
 }
 
-// Image Gallery with Modal Functionality and Grid Modal
+// Folder-Scoped Gallery — one balloon "highlight" per occasion, each opening
+// the lightbox on just its own photos. There's no separate "browse everything"
+// view; this *is* the gallery, matching how Instagram highlights work.
 function initializeImageGallery() {
     // Gallery state
-    let currentIndex = 0;
-    let allImages = [];
-    let isTransitioning = false;
-    let gridPopulated = false;
+    let folderImages = {};          // category slug -> ordered image list (newest first)
+    let modalImageList = [];        // The list the open modal is currently navigating
+    let modalCategory = '';         // category slug for the open modal, used to build image paths
+    let modalCategoryLabel = '';    // Human-readable category name, used for modal alt text
     let modalCurrentIndex = 0;
-    let modalOpenedFromGrid = false;
 
-    // Touch/swipe variables
-    let startX = 0;
-    let currentX = 0;
-    let isDragging = false;
-    let startTime = 0;
+    // Category folders shown as balloon "highlights". Order here doesn't drive
+    // display order (the HTML/CSS does) — it's only used to validate the manifest.
+    const CATEGORY_SLUGS = [
+        'birthdays', 'christenings', 'special-days', 'events',
+        'weddings', 'easter', 'christmas', 'halloween'
+    ];
+
+    const ALLOWED_EXTENSIONS = new Set(['jpeg', 'jpg', 'png', 'webp', 'gif', 'avif']);
 
     // DOM elements
-    const singleView = document.getElementById('single-view');
-    const singleContainer = document.getElementById('single-container');
-    const gridContainer = document.getElementById('grid-container');
-    const singlePrevBtn = document.getElementById('single-prev');
-    const singleNextBtn = document.getElementById('single-next');
-    const singleIndicators = document.getElementById('single-indicators');
-    const gridToggleBtn = document.getElementById('grid-toggle');
-    const gridModal = document.getElementById('grid-modal');
-    const gridModalClose = document.getElementById('grid-modal-close');
     const modal = document.getElementById('image-modal');
+    const modalContent = modal ? modal.querySelector('.modal-content') : null;
     const modalImage = document.getElementById('modal-image');
     const modalClose = document.querySelector('.modal-close');
     const modalPrevBtn = document.getElementById('modal-prev');
     const modalNextBtn = document.getElementById('modal-next');
+    const modalIndicators = document.getElementById('modal-indicators');
+    const modalGridToggle = document.getElementById('modal-grid-toggle');
+    const folderBalloons = document.querySelectorAll('.folder-balloon[data-category]');
 
-    // Get items per page based on screen size
-    function getItemsPerPage() {
-        if (window.innerWidth <= 480) {
-            return 3; // Small mobile
-        } else {
-            return 4; // Desktop and tablet
+    // Content that sits behind the modal — made inert while it's open so
+    // background text/links are excluded from tab order and the
+    // accessibility tree (rather than just visually obscured), matching how
+    // a true modal dialog should behave.
+    const backgroundContent = [
+        document.querySelector('main'),
+        document.querySelector('footer'),
+        document.querySelector('.whatsapp-floating-btn'),
+    ].filter(Boolean);
+
+    // Category grid view — one shared overlay (#category-grid-modal) reused by
+    // every folder highlight; it always reflects whatever category is
+    // currently open in the lightbox above, rather than being rebuilt per
+    // category in markup or code.
+    const gridModal = document.getElementById('category-grid-modal');
+    const gridModalClose = document.getElementById('grid-modal-close');
+    const gridContainer = document.getElementById('grid-container');
+    let gridTransitioning = false;
+
+    // "Fly" open transition (shared-element/FLIP) from a clicked folder
+    // balloon into the centered lightbox — see flyModalOpen() below. Tracked
+    // here so closeModal() can cancel a flight that's still in progress
+    // (e.g. Escape pressed immediately after opening) and updateModalImage()
+    // can avoid resizing the box out from under the flight animation.
+    let cancelActiveFlight = null;
+    let pendingImageReveal = null;
+    let shimmerDelayTimer = null;
+
+    function prefersReducedMotion() {
+        return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    }
+
+    function isImageFilename(name) {
+        if (typeof name !== 'string') return false;
+        const ext = name.split('.').pop()?.toLowerCase();
+        return !!ext && ALLOWED_EXTENSIONS.has(ext);
+    }
+
+    // Sort by the numeric part of the filename, newest (highest number) first.
+    function sortByImageNumber(list) {
+        return [...list].sort((a, b) => {
+            const numA = parseInt(a.match(/\d+/)?.[0] || '0', 10);
+            const numB = parseInt(b.match(/\d+/)?.[0] || '0', 10);
+            return numB - numA;
+        });
+    }
+
+    function normalizeManifest(data) {
+        // Backward compatibility: an older flat-array manifest means nothing
+        // is categorized yet — every folder balloon stays hidden.
+        const manifest = Array.isArray(data) ? {} : (data || {});
+        const result = {};
+        CATEGORY_SLUGS.forEach((slug) => {
+            const list = Array.isArray(manifest[slug]) ? manifest[slug] : [];
+            result[slug] = list.filter(isImageFilename);
+        });
+        return result;
+    }
+
+    // Load the auto-generated manifest (see scripts/generate-manifest.js).
+    // Returns { [categorySlug]: string[] }.
+    //
+    // Primary source: window.__GALLERY_MANIFEST__, set by the auto-generated
+    // <script src="assets/images/manifest.js">. Being a plain script tag (not
+    // a fetch()'d JSON file), it loads the same way whether index.html is
+    // opened directly via file://, from a local server, or on GitHub Pages —
+    // Chrome and other browsers block fetch()/XHR of file:// URLs, but not
+    // <script src> of them, so this is what lets the gallery work with zero
+    // local server.
+    //
+    // Fallback: fetch assets/images/manifest.json, in case manifest.js failed
+    // to load for some other reason (e.g. aggressive script blocking). If
+    // neither is available, every category comes back empty and simply stays
+    // out of the highlights row.
+    async function loadManifest() {
+        if (window.__GALLERY_MANIFEST__ && typeof window.__GALLERY_MANIFEST__ === 'object') {
+            const result = normalizeManifest(window.__GALLERY_MANIFEST__);
+            const total = Object.values(result).reduce((sum, list) => sum + list.length, 0);
+            console.log(`🎨 Loaded ${total} categorized images across ${CATEGORY_SLUGS.length} folders (inline manifest)`);
+            return result;
         }
-    }
 
-    // Gallery Configuration Helper
-    function createGalleryConfig() {
-        return {
-            // 🌟 FEATURED IMAGES (Edit these to change your top 5)
-            // These will always appear first, in this exact order
-            featured: [
-                'IMG_1088.jpeg',
-                'IMG_1273.jpeg',
-                'IMG_1956.jpeg',
-                'IMG_2046.jpeg',
-                'IMG_1889.jpeg'
-                // 'IMG_2460.jpeg',
-                // 'IMG_2455.jpeg'
-            ],
-
-            // 📋 ORDERING OPTIONS for non-featured images:
-            // 'filename' - alphabetical by filename
-            // 'date' - by number in filename, highest first (IMG_8587 before IMG_8020)
-            // 'random' - random order each page load
-            orderBy: 'date'
-        };
-    }
-
-    // Fallback image list used if manifest loading fails
-    function getFallbackImages() {
-        return [
-            'IMG_2626.jpeg',
-            'IMG_1889.jpeg',
-            'IMG_0945.jpeg',
-            'IMG_1088.jpeg',
-            'IMG_1274.jpeg',
-            'IMG_1273.jpeg',
-            'IMG_1299.jpeg',
-            'IMG_1337.jpeg',
-            'IMG_1391.jpeg',
-            'IMG_1855.jpeg',
-            'IMG_8326.jpeg',
-            'IMG_1953.jpeg',
-            'IMG_1956.jpeg',
-            'IMG_2009.jpeg',
-            'IMG_2046.jpeg',
-            'IMG_2059.jpeg',
-            'IMG_2453.jpeg',
-            'IMG_2455.jpeg',
-            'IMG_2460.jpeg',
-            'IMG_2462.jpeg',
-            'IMG_0581.jpeg',
-            'IMG_0588.jpeg',
-            'IMG_0589.jpeg',
-            'IMG_0732.jpeg',
-            'IMG_0779.jpeg',
-            'IMG_4520.jpeg',
-            'IMG_4764.jpeg',
-            'IMG_4772.jpeg',
-            'IMG_4875.jpeg',
-            'IMG_4927.jpeg',
-            'IMG_4982.jpeg',
-            'IMG_5049.jpeg',
-            'IMG_5180.jpeg',
-            'IMG_5249.jpeg',
-            'IMG_5268.jpeg',
-            'IMG_5272.jpeg',
-            'IMG_5306.jpeg',
-            'IMG_5366.jpeg',
-            'IMG_5369.jpeg',
-            'IMG_5375.jpeg',
-            'IMG_5414.jpeg',
-            'IMG_5416.jpeg',
-            'IMG_5420.jpeg',
-            'IMG_6649.jpeg',
-            'IMG_7147.jpeg',
-            'IMG_7202.jpeg',
-            'IMG_7212.jpeg',
-            'IMG_7323.jpeg',
-            'IMG_7324.jpeg',
-            'IMG_7325.jpeg',
-            'IMG_7427.jpeg',
-            'IMG_7787.jpeg',
-            'IMG_7881.jpeg',
-            'IMG_7913.jpeg',
-            'IMG_8020.jpeg',
-            'IMG_8359.jpeg',
-            'IMG_8587.jpeg',
-            'IMG_9525.jpeg',
-            'IMG_9531.jpeg',
-            'IMG_9543.jpeg',
-            'IMG_9576.jpeg',
-            'IMG_9629.jpeg',
-            'IMG_9633.jpeg'
-        ];
-    }
-
-    // Load images from manifest (static-site friendly), with fallback list
-    async function discoverImages() {
         try {
             const response = await fetch('assets/images/manifest.json', { cache: 'no-cache' });
 
@@ -175,335 +153,83 @@ function initializeImageGallery() {
                 throw new Error(`Manifest fetch failed with status ${response.status}`);
             }
 
-            const manifest = await response.json();
-            if (!Array.isArray(manifest)) {
-                throw new Error('Manifest format is invalid; expected an array of filenames');
-            }
-
-            const allowedExtensions = new Set(['jpeg', 'jpg', 'png', 'webp', 'gif', 'avif']);
-            const filtered = manifest.filter((name) => {
-                if (typeof name !== 'string') return false;
-                const parts = name.split('.');
-                const ext = parts[parts.length - 1]?.toLowerCase();
-                return allowedExtensions.has(ext);
-            });
-
-            console.log(`🎨 Loaded ${filtered.length} images from manifest`);
-            return filtered;
+            const result = normalizeManifest(await response.json());
+            const total = Object.values(result).reduce((sum, list) => sum + list.length, 0);
+            console.log(`🎨 Loaded ${total} categorized images across ${CATEGORY_SLUGS.length} folders (fetched manifest)`);
+            return result;
         } catch (error) {
-            const fallback = getFallbackImages();
-            console.warn('⚠️ Could not load manifest, using fallback image list.', error);
-            console.log(`🎨 Loaded ${fallback.length} images from fallback list`);
-            return fallback;
+            console.warn('⚠️ Could not load the gallery manifest — folder highlights will stay hidden until it can be reached.', error);
+            const result = {};
+            CATEGORY_SLUGS.forEach((slug) => { result[slug] = []; });
+            return result;
         }
     }
 
     // Initialize gallery
     loadGalleryImages();
 
-    // Function to load gallery images dynamically
     async function loadGalleryImages() {
-        const loadingElement = singleContainer.querySelector('.gallery-loading');
+        const manifest = await loadManifest();
 
-        // Auto-discover all images first
-        const discoveredImages = await discoverImages();
+        folderImages = {};
+        CATEGORY_SLUGS.forEach((slug) => {
+            folderImages[slug] = sortByImageNumber(manifest[slug] || []);
+        });
 
-        // Get gallery configuration
-        const galleryConfig = createGalleryConfig();
-
-        // Add discovered images to config
-        galleryConfig.allImages = discoveredImages;
-
-        // Smart image ordering
-        allImages = organizeImages(galleryConfig);
-
-        // Clear loading message
-        if (loadingElement) {
-            loadingElement.remove();
-        }
-
-        // Create gallery views
-        createSingleView();
-        createGridView();
-        createIndicators();
-        updateSingleView();
+        populateFolderHighlights();
         setupEventListeners();
     }
 
-    // Smart image organization function
-    function organizeImages(config) {
-        const { featured, allImages, orderBy } = config;
-        const organized = [];
-        const remaining = [...allImages];
-        const missingFeatured = [];
+    // Wire up the folder-highlight balloons: set their thumbnail and open the
+    // modal scoped to just that folder's images when clicked. A category with
+    // no photos yet is removed from the row entirely — no placeholder shown.
+    function populateFolderHighlights() {
+        folderBalloons.forEach((button) => {
+            const category = button.getAttribute('data-category');
+            const images = folderImages[category] || [];
+            const listItem = button.closest('.folder-highlights-item');
+            const labelEl = button.querySelector('.folder-balloon-label');
+            const label = labelEl ? labelEl.textContent.trim() : category;
 
-        // Add featured images first (in specified order)
-        featured.forEach(featuredImg => {
-            if (remaining.includes(featuredImg)) {
-                organized.push(featuredImg);
-                remaining.splice(remaining.indexOf(featuredImg), 1);
-            } else {
-                missingFeatured.push(featuredImg);
+            if (images.length === 0) {
+                if (listItem) listItem.hidden = true;
+                return;
             }
-        });
 
-        // Warn about missing featured images
-        if (missingFeatured.length > 0) {
-            console.warn('⚠️ Featured images not found:', missingFeatured);
-        }
+            if (listItem) listItem.hidden = false;
+            button.classList.add('has-photos');
+            button.setAttribute('aria-label', `${label} — ${images.length} photo${images.length === 1 ? '' : 's'}`);
 
-        // Order remaining images based on configuration
-        let orderedRemaining = [];
-        switch (orderBy) {
-            case 'filename':
-                orderedRemaining = remaining.sort();
-                break;
-            case 'date':
-                // Extract numbers from filename and sort descending (highest first)
-                orderedRemaining = remaining.sort((a, b) => {
-                    const numA = parseInt(a.match(/\d+/)?.[0] || '0');
-                    const numB = parseInt(b.match(/\d+/)?.[0] || '0');
-                    return numB - numA;
-                });
-                break;
-            case 'random':
-                orderedRemaining = remaining.sort(() => Math.random() - 0.5);
-                break;
-            case 'manual':
-                // Keep the order as specified in allImages
-                orderedRemaining = remaining;
-                break;
-            default:
-                orderedRemaining = remaining.sort();
-        }
-
-        // Combine featured + remaining
-        const finalOrder = [...organized, ...orderedRemaining];
-
-        // Log the final order for verification
-        console.log('🎨 Gallery Order:', {
-            featured: organized.length,
-            remaining: orderedRemaining.length,
-            total: finalOrder.length,
-            orderBy: orderBy,
-            firstFive: finalOrder.slice(0, 5),
-            featuredImages: organized
-        });
-
-        return finalOrder;
-    }
-
-    // Create single image view
-    function createSingleView() {
-        // Single view shows one image at a time
-        updateSingleImage();
-    }
-
-    // Update single image display
-    function updateSingleImage() {
-        if (allImages.length === 0) return;
-
-        const filename = allImages[currentIndex];
-
-        // Create new image item
-        const singleItem = document.createElement('div');
-        singleItem.className = 'single-image-item loading';
-
-        const img = document.createElement('img');
-        img.alt = `Balloon arrangement ${currentIndex + 1}`;
-
-        // Handle image load
-        img.onload = () => {
-            singleItem.classList.remove('loading');
-            singleItem.classList.add('loaded');
-        };
-
-        img.onerror = () => {
-            singleItem.classList.remove('loading');
-            singleItem.classList.add('error');
-        };
-
-        // Set src after onload handler
-        img.src = `assets/images/${filename}`;
-
-        singleItem.appendChild(img);
-
-        // Clear and add new content
-        singleContainer.innerHTML = '';
-        singleContainer.appendChild(singleItem);
-
-        // Add click handler to open modal (full size)
-        singleItem.addEventListener('click', () => {
-            if (!isDragging) {
-                openModal(currentIndex);
+            const thumb = button.querySelector('.folder-balloon-thumb');
+            if (thumb) {
+                thumb.addEventListener('load', () => thumb.classList.add('thumb-loaded'), { once: true });
+                thumb.src = `assets/images/${category}/${images[0]}`;
             }
-        });
 
-        // Add keyboard support
-        singleItem.setAttribute('tabindex', '0');
-        singleItem.setAttribute('role', 'button');
-        singleItem.setAttribute('aria-label', 'Open image in modal');
-        singleItem.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                openModal(currentIndex);
-            }
-        });
+            const shape = button.querySelector('.folder-balloon-shape');
 
-        // Update navigation buttons (never disable for infinite scroll)
-        if (singlePrevBtn) singlePrevBtn.disabled = false;
-        if (singleNextBtn) singleNextBtn.disabled = false;
-    }
-
-    // Create grid view with proper lazy loading using Intersection Observer
-    function createGridView() {
-        gridContainer.innerHTML = '';
-
-        allImages.forEach((filename, index) => {
-            const gridItem = document.createElement('div');
-            gridItem.className = 'grid-item loading';
-            gridItem.setAttribute('data-index', index);
-            gridItem.setAttribute('data-src', `assets/images/${filename}`);
-
-            const img = document.createElement('img');
-            img.alt = `Balloon arrangement ${index + 1}`;
-
-            // Handle image load
-            img.onload = () => {
-                gridItem.classList.remove('loading');
-                gridItem.classList.add('loaded');
-            };
-
-            img.onerror = () => {
-                gridItem.classList.remove('loading');
-                gridItem.classList.add('error');
-            };
-
-            // Don't set src yet - will be set by Intersection Observer
-
-            gridItem.appendChild(img);
-            gridContainer.appendChild(gridItem);
-
-            // Add click handler to open modal (from grid)
-            gridItem.addEventListener('click', () => {
-                openModal(index, true);
-            });
-
-            // Add keyboard support
-            gridItem.setAttribute('tabindex', '0');
-            gridItem.setAttribute('role', 'button');
-            gridItem.setAttribute('aria-label', `Open image ${index + 1} in modal`);
-            gridItem.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    openModal(index);
+            button.addEventListener('click', () => {
+                // Quick squash-and-settle on the balloon itself, echoing the
+                // balloon motif and giving instant click feedback while the
+                // lightbox flies open. Restart-safe for rapid re-clicks.
+                if (shape && !prefersReducedMotion()) {
+                    shape.classList.remove('popping');
+                    void shape.offsetWidth; // force reflow so the animation restarts
+                    shape.classList.add('popping');
+                    shape.addEventListener('animationend', () => {
+                        shape.classList.remove('popping');
+                    }, { once: true });
                 }
+
+                openModal(0, images, category, label, { shape, thumb });
             });
-        });
-
-        // Setup lazy loading observer for grid items
-        setupGridLazyLoading();
-    }
-
-    // Lazy loading for grid images using Intersection Observer
-    function setupGridLazyLoading() {
-        const gridItems = gridContainer.querySelectorAll('.grid-item[data-src]');
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const gridItem = entry.target;
-                    const img = gridItem.querySelector('img');
-                    const src = gridItem.getAttribute('data-src');
-
-                    if (src && img && !img.src) {
-                        img.src = src;
-                        gridItem.removeAttribute('data-src');
-                    }
-
-                    observer.unobserve(gridItem);
-                }
-            });
-        }, {
-            root: document.querySelector('.grid-modal-content'),
-            rootMargin: '100px',
-            threshold: 0
-        });
-
-        gridItems.forEach(item => observer.observe(item));
-    }
-
-    // Create page indicators for single view
-    function createIndicators() {
-        singleIndicators.innerHTML = '';
-
-        allImages.forEach((_, index) => {
-            const indicator = document.createElement('div');
-            indicator.className = 'gallery-indicator';
-            if (index === 0) indicator.classList.add('active');
-
-            indicator.addEventListener('click', () => goToImage(index));
-            singleIndicators.appendChild(indicator);
-        });
-    }
-
-    // Update single view display
-    function updateSingleView() {
-        updateSingleImage();
-
-        // Never disable buttons for infinite scroll
-        if (singlePrevBtn) singlePrevBtn.disabled = false;
-        if (singleNextBtn) singleNextBtn.disabled = false;
-
-        // Update indicators
-        document.querySelectorAll('.gallery-indicator').forEach((indicator, index) => {
-            indicator.classList.toggle('active', index === currentIndex);
         });
     }
 
     // Setup event listeners
     function setupEventListeners() {
-        // Grid modal toggle button
-        if (gridToggleBtn) {
-            gridToggleBtn.addEventListener('click', openGridModal);
-        }
-
-        // Grid modal close button
-        if (gridModalClose) {
-            gridModalClose.addEventListener('click', closeGridModal);
-        }
-
-        // Close grid modal on backdrop click
-        if (gridModal) {
-            gridModal.addEventListener('click', (e) => {
-                if (e.target === gridModal) {
-                    closeGridModal();
-                }
-            });
-        }
-
-        // Single view navigation buttons
-        if (singlePrevBtn) {
-            singlePrevBtn.addEventListener('click', goToPrevImage);
-        }
-        if (singleNextBtn) {
-            singleNextBtn.addEventListener('click', goToNextImage);
-        }
-
-        // Touch/swipe events for single view
-        if (singleContainer) {
-            singleContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
-            singleContainer.addEventListener('touchmove', handleTouchMove, { passive: false });
-            singleContainer.addEventListener('touchend', handleTouchEnd, { passive: true });
-
-            // Mouse events for desktop drag
-            singleContainer.addEventListener('mousedown', handleMouseDown);
-            singleContainer.addEventListener('mousemove', handleMouseMove);
-            singleContainer.addEventListener('mouseup', handleMouseUp);
-            singleContainer.addEventListener('mouseleave', handleMouseUp);
-        }
-
-        // Keyboard navigation
+        // Keyboard navigation only matters while the lightbox is open — there's
+        // no page-level carousel to drive with arrow keys anymore.
         document.addEventListener('keydown', handleKeyDown);
 
         // Modal close
@@ -536,17 +262,33 @@ function initializeImageGallery() {
                 navigateModalNext();
             });
         }
+
+        // Category grid view
+        if (modalGridToggle) {
+            modalGridToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openCategoryGrid();
+            });
+        }
+        if (gridModalClose) {
+            gridModalClose.addEventListener('click', closeCategoryGrid);
+        }
+        if (gridModal) {
+            gridModal.addEventListener('click', (e) => {
+                if (e.target === gridModal) {
+                    closeCategoryGrid();
+                }
+            });
+        }
     }
 
     // Modal touch/swipe handling
     let modalStartX = 0;
     let modalCurrentX = 0;
-    let modalIsDragging = false;
 
     function handleModalTouchStart(e) {
         modalStartX = e.touches[0].clientX;
         modalCurrentX = modalStartX;
-        modalIsDragging = false;
     }
 
     function handleModalTouchMove(e) {
@@ -556,12 +298,11 @@ function initializeImageGallery() {
         const diffX = modalStartX - modalCurrentX;
 
         if (Math.abs(diffX) > 10) {
-            modalIsDragging = true;
             e.preventDefault();
         }
     }
 
-    function handleModalTouchEnd(e) {
+    function handleModalTouchEnd() {
         if (modalStartX === 0) return;
 
         const diffX = modalStartX - modalCurrentX;
@@ -580,277 +321,450 @@ function initializeImageGallery() {
         // Reset
         modalStartX = 0;
         modalCurrentX = 0;
-        setTimeout(() => {
-            modalIsDragging = false;
-        }, 100);
     }
 
-    // Open grid modal
-    function openGridModal() {
-        if (isTransitioning) return;
-
-        // Populate grid if not already done
-        if (!gridPopulated) {
-            createGridView();
-            gridPopulated = true;
+    // Keyboard navigation — the grid view sits on top of the lightbox, so it
+    // takes priority (Escape closes it first, back to the lightbox) before
+    // falling through to the lightbox's own prev/next/close handling.
+    function handleKeyDown(e) {
+        if (gridModal && gridModal.classList.contains('active')) {
+            if (e.key === 'Escape') {
+                closeCategoryGrid();
+            }
+            return;
         }
 
-        // Show modal
-        gridModal.classList.add('active');
+        if (!modal.classList.contains('active')) return;
+
+        switch (e.key) {
+            case 'Escape':
+                closeModal();
+                break;
+            case 'ArrowLeft':
+                e.preventDefault();
+                navigateModalPrev();
+                break;
+            case 'ArrowRight':
+                e.preventDefault();
+                navigateModalNext();
+                break;
+        }
+    }
+
+    // Modal functionality with navigation, always scoped to one folder's photos.
+    // `origin` (optional) is the { shape, thumb } elements of the folder
+    // balloon that was clicked, used to fly the lightbox open from that
+    // balloon's actual on-screen position instead of just fading in centered.
+    function openModal(index, imageList, category, categoryLabel, origin) {
+        modalImageList = imageList;
+        modalCategory = category;
+        modalCategoryLabel = categoryLabel;
+        modalCurrentIndex = index;
+        buildModalIndicators();
+        modal.setAttribute('aria-label', `${categoryLabel} photos`);
+        modal.classList.add('active');
         document.body.style.overflow = 'hidden';
+        backgroundContent.forEach((el) => { el.inert = true; });
 
-        // Trigger entrance animation
-        requestAnimationFrame(() => {
-            gridModal.classList.add('visible');
+        updateModalImage({ isInitialOpen: true });
 
-            // Animate grid items with stagger
-            const gridItems = gridContainer.querySelectorAll('.grid-item');
-            gridItems.forEach((item, index) => {
-                item.classList.remove('visible');
-                setTimeout(() => {
-                    item.classList.add('visible');
-                }, index * 30);
+        const originRect = origin && origin.shape ? origin.shape.getBoundingClientRect() : null;
+        const thumbSrc = origin && origin.thumb && origin.thumb.currentSrc
+            ? origin.thumb.currentSrc
+            : (origin && origin.thumb ? origin.thumb.src : null);
+
+        if (originRect && originRect.width > 0 && thumbSrc && !prefersReducedMotion()) {
+            flyModalOpen(originRect, thumbSrc);
+        } else {
+            // Fallback: plain fade/scale entrance (CSS keyframes), used when
+            // there's no click origin to fly from, or motion is reduced.
+            modal.classList.add('enter-fade');
+            if (modalContent) modalContent.classList.add('enter-scale');
+        }
+
+        // Focus the close button for accessibility
+        if (modalClose) modalClose.focus();
+    }
+
+    // Shared-element ("FLIP") open transition: the lightbox's image box
+    // starts exactly at the clicked balloon's position/size/roundness,
+    // showing that balloon's own thumbnail photo, then animates to the
+    // lightbox's centered position. Since the balloon thumbnail is always
+    // the same file as photo index 0 (see populateFolderHighlights), what's
+    // "flying" is genuinely the same image the lightbox is opening to — no
+    // placeholder swap, no seam once the real <img> takes over.
+    function flyModalOpen(originRect, thumbSrc) {
+        if (!modalContent) return;
+
+        modal.classList.add('flying');
+        // Suppresses the shimmer's own background-position keyframe (it would
+        // otherwise keep animating — and winning — over the inline
+        // background photo set below, since running CSS animations take
+        // priority over inline styles for the properties they animate).
+        modalContent.classList.add('flying');
+
+        // Target = wherever modal-content is already laid out right now
+        // (the fixed-size shimmer box from updateModalImage(), or a
+        // previously-settled image size) — a known, stable rect to animate
+        // toward without waiting on the full-size image to load.
+        const targetRect = modalContent.getBoundingClientRect();
+        if (targetRect.width === 0 || targetRect.height === 0) {
+            modal.classList.remove('flying');
+            modal.classList.add('enter-fade');
+            modalContent.classList.add('enter-scale');
+            return;
+        }
+
+        const dx = (originRect.left + originRect.width / 2) - (targetRect.left + targetRect.width / 2);
+        const dy = (originRect.top + originRect.height / 2) - (targetRect.top + targetRect.height / 2);
+        const scaleX = originRect.width / targetRect.width;
+        const scaleY = originRect.height / targetRect.height;
+
+        modalContent.style.transition = 'none';
+        modalContent.style.transformOrigin = 'center center';
+        modalContent.style.transform = `translate(${dx}px, ${dy}px) scale(${scaleX}, ${scaleY})`;
+        // Matches .folder-balloon-shape's rounding, so the box reads as the
+        // same object as it morphs into a plain rectangle.
+        modalContent.style.borderRadius = '50% 50% 50% 50% / 35% 35% 65% 65%';
+        modalContent.style.background = `center / cover no-repeat url("${thumbSrc}")`;
+        modalContent.style.filter = 'blur(5px)';
+
+        // Force a reflow so the "from" state above actually paints before
+        // switching to the transitioned "to" state below.
+        void modalContent.offsetWidth;
+
+        modalContent.style.transition =
+            'transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), border-radius 0.5s ease-out, filter 0.4s ease-out';
+        modalContent.style.transform = 'translate(0, 0) scale(1, 1)';
+        modalContent.style.borderRadius = '';
+        modalContent.style.filter = 'blur(0px)';
+
+        let safetyTimer = null;
+
+        const finishFlight = () => {
+            if (!cancelActiveFlight) return; // already finished via the other path
+            clearTimeout(safetyTimer);
+            modalContent.style.transition = '';
+            modalContent.style.transform = '';
+            modalContent.style.transformOrigin = '';
+            modalContent.style.borderRadius = '';
+            modalContent.style.background = '';
+            modalContent.style.filter = '';
+            modalContent.removeEventListener('transitionend', onTransitionEnd);
+            modalContent.classList.remove('flying');
+            modal.classList.remove('flying');
+            cancelActiveFlight = null;
+
+            // The image may have finished loading mid-flight (e.g. it was
+            // already cached) — updateModalImage() deferred revealing it
+            // until now so it didn't resize/crossfade underneath the flight.
+            if (pendingImageReveal) {
+                const reveal = pendingImageReveal;
+                pendingImageReveal = null;
+                reveal();
+            }
+        };
+
+        function onTransitionEnd(e) {
+            if (e.target !== modalContent || e.propertyName !== 'transform') return;
+            finishFlight();
+        }
+        modalContent.addEventListener('transitionend', onTransitionEnd);
+
+        // Safety net in case transitionend never fires (tab backgrounded,
+        // element removed, etc.) so the lightbox can't get stuck mid-flight.
+        safetyTimer = setTimeout(finishFlight, 650);
+        cancelActiveFlight = finishFlight;
+    }
+
+    // Builds the dot-indicator row once per modal open (the image list only
+    // changes when a different folder is opened) — one dot per photo, so it
+    // reads as "the amount of pictures and which one I'm on," matching the
+    // dot indicators from the site's original single-view carousel. The row
+    // wraps (see .modal-indicators CSS) rather than being capped, so it works
+    // the same way regardless of how many photos a category has.
+    function buildModalIndicators() {
+        if (!modalIndicators) return;
+
+        modalIndicators.innerHTML = '';
+        const total = modalImageList.length;
+
+        if (total <= 1) {
+            modalIndicators.hidden = true;
+            return;
+        }
+
+        modalIndicators.hidden = false;
+        const fragment = document.createDocumentFragment();
+        for (let i = 0; i < total; i++) {
+            const dot = document.createElement('button');
+            dot.type = 'button';
+            dot.className = 'modal-indicator';
+            dot.setAttribute('aria-label', `Go to photo ${i + 1} of ${total}`);
+            dot.addEventListener('click', () => {
+                modalCurrentIndex = i;
+                updateModalImage();
             });
+            fragment.appendChild(dot);
+        }
+        modalIndicators.appendChild(fragment);
+    }
+
+    function updateModalIndicators() {
+        if (modalIndicators && !modalIndicators.hidden) {
+            modalIndicators.querySelectorAll('.modal-indicator').forEach((dot, i) => {
+                dot.classList.toggle('active', i === modalCurrentIndex);
+            });
+        }
+    }
+
+    // Loads each image behind a shimmer skeleton (reinstated from the site's
+    // original single-view carousel, .single-image-item.loading) instead of
+    // just leaving a blank gap while it fetches, then fades the real photo in
+    // once it's actually decoded. The shimmer lives on .modal-content (the
+    // fixed-size wrapper) rather than the <img> itself, so there's always a
+    // visible placeholder box instead of a collapsing/jumping layout.
+    //
+    // `direction` (-1 prev, 1 next, 0 non-directional) makes the incoming
+    // photo slide in from the side it was navigated from, echoing the swipe
+    // gesture, instead of a generic scale-in — used for prev/next only, not
+    // the very first photo shown or a jump to an arbitrary index (indicator
+    // dots / grid view), where "left" or "right" wouldn't mean anything.
+    //
+    // `isInitialOpen` is only true for the very first call from openModal():
+    // that path needs the fixed-size shimmer skeleton in place synchronously
+    // so flyModalOpen() can measure a real target rect. Every later call
+    // (prev/next/dots/grid) instead holds modal-content at whatever size
+    // it's already showing and only actually reveals the shimmer if loading
+    // takes long enough to be visible — combined with the neighbor
+    // preloading below, most navigations resolve well under that delay and
+    // skip the loading state entirely.
+    function updateModalImage(options = {}) {
+        if (modalImageList.length === 0) return;
+        const { isInitialOpen = false, direction = 0 } = options;
+
+        const filename = modalImageList[modalCurrentIndex];
+        const targetSrc = `assets/images/${modalCategory}/${filename}`;
+        const alreadyLoaded = modalImage.src.endsWith(targetSrc) && modalImage.complete;
+
+        clearTimeout(shimmerDelayTimer);
+
+        modalImage.classList.remove('loaded');
+        modalImage.style.transform = direction !== 0
+            ? `translateX(${direction * 36}px) scale(0.98)`
+            : '';
+
+        if (modalContent) {
+            if (isInitialOpen) {
+                modalContent.classList.add('loading');
+            } else if (!alreadyLoaded) {
+                const lockedRect = modalContent.getBoundingClientRect();
+                modalContent.style.width = `${lockedRect.width}px`;
+                modalContent.style.height = `${lockedRect.height}px`;
+                shimmerDelayTimer = setTimeout(() => {
+                    modalContent.classList.add('loading');
+                }, 120);
+            }
+        }
+
+        const reveal = () => {
+            clearTimeout(shimmerDelayTimer);
+            if (modalContent) {
+                modalContent.classList.remove('loading');
+                modalContent.style.width = '';
+                modalContent.style.height = '';
+            }
+            modalImage.style.transform = '';
+            modalImage.classList.add('loaded');
+        };
+
+        // If the fly-open transition (flyModalOpen) is still animating
+        // modal-content's size/position, defer revealing the settled image
+        // until it finishes — otherwise the shimmer box's dimensions would
+        // resize out from under the flight transform mid-animation.
+        const onReady = () => {
+            if (modal.classList.contains('flying')) {
+                pendingImageReveal = reveal;
+            } else {
+                reveal();
+            }
+        };
+
+        if (alreadyLoaded) {
+            // Already-loaded image (e.g. navigating back to one just viewed) —
+            // still soft-load it in for a consistent feel, via rAF so the
+            // "loading" state has a frame to apply before we remove it.
+            requestAnimationFrame(onReady);
+        } else {
+            modalImage.addEventListener('load', onReady, { once: true });
+        }
+
+        modalImage.src = targetSrc;
+        modalImage.alt = `${modalCategoryLabel} balloon arrangement ${modalCurrentIndex + 1} of ${modalImageList.length}`;
+        updateModalIndicators();
+        preloadModalNeighbors();
+    }
+
+    // Fetches the adjacent photos in the background so that by the time
+    // someone actually clicks prev/next, they're usually already in the
+    // browser's HTTP cache — the shimmer-delay above then has nothing to
+    // wait out and navigation feels instant.
+    function preloadModalNeighbors() {
+        const total = modalImageList.length;
+        if (total <= 1) return;
+
+        const nextIndex = (modalCurrentIndex + 1) % total;
+        const prevIndex = (modalCurrentIndex - 1 + total) % total;
+        [nextIndex, prevIndex].forEach((i) => {
+            const preloadImg = new Image();
+            preloadImg.src = `assets/images/${modalCategory}/${modalImageList[i]}`;
         });
     }
 
-    // Close grid modal
-    function closeGridModal() {
-        if (isTransitioning) return;
-        isTransitioning = true;
+    function navigateModalPrev() {
+        if (modalImageList.length === 0) return;
+
+        // Wrap around to last image
+        if (modalCurrentIndex === 0) {
+            modalCurrentIndex = modalImageList.length - 1;
+        } else {
+            modalCurrentIndex--;
+        }
+        updateModalImage({ direction: -1 });
+    }
+
+    function navigateModalNext() {
+        if (modalImageList.length === 0) return;
+
+        // Wrap around to first image
+        if (modalCurrentIndex === modalImageList.length - 1) {
+            modalCurrentIndex = 0;
+        } else {
+            modalCurrentIndex++;
+        }
+        updateModalImage({ direction: 1 });
+    }
+
+    function closeModal() {
+        // Cancel a fly-open transition still in progress (e.g. Escape hit
+        // immediately after opening) so it can't keep animating, or leave
+        // modal-content's inline styles, behind a closed lightbox.
+        if (cancelActiveFlight) cancelActiveFlight();
+        pendingImageReveal = null;
+        clearTimeout(shimmerDelayTimer);
+
+        modal.classList.remove('active', 'enter-fade', 'flying');
+        if (modalContent) {
+            modalContent.classList.remove('loading', 'enter-scale', 'flying');
+            modalContent.style.width = '';
+            modalContent.style.height = '';
+        }
+        modalImage.classList.remove('loaded');
+        modalImage.style.transform = '';
+        modalImage.src = '';
+        modalImage.alt = '';
+        document.body.style.overflow = '';
+        backgroundContent.forEach((el) => { el.inert = false; });
+
+        // Safety net: never leave the grid view stranded open (or the
+        // lightbox marked inert) behind a closed lightbox — e.g. Escape
+        // pressed twice quickly.
+        modal.inert = false;
+        if (gridModal && gridModal.classList.contains('active')) {
+            gridModal.classList.remove('active', 'visible', 'closing');
+        }
+    }
+
+    // ---- Category Grid View ----------------------------------------------
+    // Reused by every folder highlight: always builds from whatever
+    // modalImageList/modalCategory is currently open, so there is exactly one
+    // implementation shared across all 8 categories rather than one per
+    // category. Reinstates the site's original grid view (thumbnail grid,
+    // staggered entrance, shimmer-loading thumbnails), scoped to one folder's
+    // photos instead of the whole gallery.
+
+    function buildCategoryGrid() {
+        if (!gridContainer) return;
+        gridContainer.innerHTML = '';
+
+        const fragment = document.createDocumentFragment();
+        modalImageList.forEach((filename, index) => {
+            const gridItem = document.createElement('div');
+            gridItem.className = 'grid-item loading';
+
+            const img = document.createElement('img');
+            img.loading = 'lazy';
+            img.decoding = 'async';
+            img.alt = `${modalCategoryLabel} photo ${index + 1} of ${modalImageList.length}`;
+            img.addEventListener('load', () => {
+                gridItem.classList.remove('loading');
+                gridItem.classList.add('loaded');
+            }, { once: true });
+            img.src = `assets/images/${modalCategory}/${filename}`;
+
+            gridItem.appendChild(img);
+
+            const selectThisPhoto = () => {
+                modalCurrentIndex = index;
+                updateModalImage();
+                closeCategoryGrid();
+            };
+
+            gridItem.addEventListener('click', selectThisPhoto);
+            gridItem.setAttribute('tabindex', '0');
+            gridItem.setAttribute('role', 'button');
+            gridItem.setAttribute('aria-label', `View photo ${index + 1} of ${modalImageList.length}`);
+            gridItem.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    selectThisPhoto();
+                }
+            });
+
+            fragment.appendChild(gridItem);
+        });
+        gridContainer.appendChild(fragment);
+    }
+
+    function openCategoryGrid() {
+        if (!gridModal || gridTransitioning) return;
+
+        buildCategoryGrid();
+        gridModal.classList.add('active');
+        gridModal.setAttribute('aria-label', `All ${modalCategoryLabel} photos`);
+        // The lightbox is still open underneath, visually and in the DOM —
+        // make its own controls (close/prev/next) inert while the grid
+        // overlay has focus, instead of leaving them reachable by Tab.
+        if (modal) modal.inert = true;
+
+        requestAnimationFrame(() => {
+            gridModal.classList.add('visible');
+
+            const items = gridContainer.querySelectorAll('.grid-item');
+            items.forEach((item, index) => {
+                item.classList.remove('visible');
+                setTimeout(() => item.classList.add('visible'), index * 30);
+            });
+        });
+
+        if (gridModalClose) gridModalClose.focus();
+    }
+
+    function closeCategoryGrid() {
+        if (!gridModal || gridTransitioning) return;
+        gridTransitioning = true;
 
         gridModal.classList.remove('visible');
         gridModal.classList.add('closing');
 
         setTimeout(() => {
             gridModal.classList.remove('active', 'closing');
-            document.body.style.overflow = '';
-            isTransitioning = false;
+            gridTransitioning = false;
+            // The lightbox is still open underneath — restore it and return
+            // focus there.
+            if (modal) modal.inert = false;
+            if (modalClose) modalClose.focus();
         }, 400);
-    }
-
-    // Navigation functions with infinite scroll (wrap around)
-    function goToPrevImage() {
-        if (isTransitioning || allImages.length === 0) return;
-
-        // Wrap around to last image if at the beginning
-        if (currentIndex === 0) {
-            currentIndex = allImages.length - 1;
-        } else {
-            currentIndex--;
-        }
-        updateSingleView();
-    }
-
-    function goToNextImage() {
-        if (isTransitioning || allImages.length === 0) return;
-
-        // Wrap around to first image if at the end
-        if (currentIndex === allImages.length - 1) {
-            currentIndex = 0;
-        } else {
-            currentIndex++;
-        }
-        updateSingleView();
-    }
-
-    function goToImage(index) {
-        if (index >= 0 && index < allImages.length && !isTransitioning) {
-            currentIndex = index;
-            updateSingleView();
-        }
-    }
-
-    // Touch/swipe handling
-    function handleTouchStart(e) {
-        startX = e.touches[0].clientX;
-        currentX = startX;
-        startTime = Date.now();
-        isDragging = false;
-    }
-
-    function handleTouchMove(e) {
-        if (startX === 0) return;
-
-        currentX = e.touches[0].clientX;
-        const diffX = startX - currentX;
-
-        if (Math.abs(diffX) > 10) {
-            isDragging = true;
-            e.preventDefault(); // Prevent scrolling
-        }
-    }
-
-    function handleTouchEnd(e) {
-        if (startX === 0) return;
-
-        const diffX = startX - currentX;
-        const diffTime = Date.now() - startTime;
-        const velocity = Math.abs(diffX) / diffTime;
-
-        // Determine if it's a swipe (minimum distance and velocity)
-        if (Math.abs(diffX) > 50 || velocity > 0.5) {
-            if (diffX > 0) {
-                // Swiped left, go to next
-                goToNextImage();
-            } else {
-                // Swiped right, go to previous
-                goToPrevImage();
-            }
-        }
-
-        // Reset
-        startX = 0;
-        currentX = 0;
-        setTimeout(() => {
-            isDragging = false;
-        }, 100);
-    }
-
-    // Mouse drag handling (for desktop)
-    function handleMouseDown(e) {
-        startX = e.clientX;
-        currentX = startX;
-        startTime = Date.now();
-        isDragging = false;
-        e.preventDefault(); // Prevent text selection
-    }
-
-    function handleMouseMove(e) {
-        if (startX === 0) return;
-
-        currentX = e.clientX;
-        const diffX = startX - currentX;
-
-        if (Math.abs(diffX) > 10) {
-            isDragging = true;
-        }
-    }
-
-    function handleMouseUp(e) {
-        if (startX === 0) return;
-
-        const diffX = startX - currentX;
-        const diffTime = Date.now() - startTime;
-        const velocity = Math.abs(diffX) / diffTime;
-
-        // Determine if it's a drag (minimum distance and velocity)
-        if (Math.abs(diffX) > 50 || velocity > 0.3) {
-            if (diffX > 0) {
-                // Dragged left, go to next
-                goToNextImage();
-            } else {
-                // Dragged right, go to previous
-                goToPrevImage();
-            }
-        }
-
-        // Reset
-        startX = 0;
-        currentX = 0;
-        setTimeout(() => {
-            isDragging = false;
-        }, 100);
-    }
-
-    // Keyboard navigation
-    function handleKeyDown(e) {
-        // Handle image modal navigation and escape
-        if (modal.classList.contains('active')) {
-            switch (e.key) {
-                case 'Escape':
-                    closeModal();
-                    break;
-                case 'ArrowLeft':
-                    e.preventDefault();
-                    navigateModalPrev();
-                    break;
-                case 'ArrowRight':
-                    e.preventDefault();
-                    navigateModalNext();
-                    break;
-            }
-            return;
-        }
-
-        // Handle grid modal escape
-        if (gridModal.classList.contains('active')) {
-            if (e.key === 'Escape') {
-                closeGridModal();
-            }
-            return;
-        }
-
-        // Single view navigation
-        switch (e.key) {
-            case 'ArrowLeft':
-                e.preventDefault();
-                goToPrevImage();
-                break;
-            case 'ArrowRight':
-                e.preventDefault();
-                goToNextImage();
-                break;
-        }
-    }
-
-    // Modal functionality with navigation
-    function openModal(index, fromGrid = false) {
-        modalCurrentIndex = index;
-        modalOpenedFromGrid = fromGrid;
-        updateModalImage();
-        modal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-
-        // Focus the close button for accessibility
-        if (modalClose) modalClose.focus();
-    }
-
-    function updateModalImage() {
-        if (allImages.length === 0) return;
-
-        const filename = allImages[modalCurrentIndex];
-        modalImage.src = `assets/images/${filename}`;
-        modalImage.alt = `Balloon arrangement ${modalCurrentIndex + 1}`;
-    }
-
-    function navigateModalPrev() {
-        if (allImages.length === 0) return;
-
-        // Wrap around to last image
-        if (modalCurrentIndex === 0) {
-            modalCurrentIndex = allImages.length - 1;
-        } else {
-            modalCurrentIndex--;
-        }
-        updateModalImage();
-    }
-
-    function navigateModalNext() {
-        if (allImages.length === 0) return;
-
-        // Wrap around to first image
-        if (modalCurrentIndex === allImages.length - 1) {
-            modalCurrentIndex = 0;
-        } else {
-            modalCurrentIndex++;
-        }
-        updateModalImage();
-    }
-
-    function closeModal() {
-        modal.classList.remove('active');
-        modalImage.src = '';
-        modalImage.alt = '';
-
-        // If opened from grid, keep grid modal open
-        if (modalOpenedFromGrid && gridModal.classList.contains('active')) {
-            document.body.style.overflow = 'hidden'; // Keep overflow hidden for grid
-        } else {
-            document.body.style.overflow = '';
-        }
-
-        modalOpenedFromGrid = false;
     }
 }
 

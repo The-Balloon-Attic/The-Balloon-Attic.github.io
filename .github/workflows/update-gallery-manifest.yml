@@ -1,0 +1,51 @@
+name: Update Gallery Manifest
+
+# Keeps assets/images/manifest.json in sync with what's actually in the gallery
+# folders, so adding/removing/renaming a photo is the only step anyone needs to
+# take — no manual JSON editing. Triggered only by image file changes (never by
+# manifest.json itself), so it can never trigger itself in a loop.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "assets/images/**/*.jpg"
+      - "assets/images/**/*.jpeg"
+      - "assets/images/**/*.png"
+      - "assets/images/**/*.webp"
+      - "assets/images/**/*.gif"
+      - "assets/images/**/*.avif"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-gallery-manifest
+  cancel-in-progress: false
+
+jobs:
+  update-manifest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Regenerate manifest
+        run: node scripts/generate-manifest.js
+
+      - name: Commit manifest if it changed
+        run: |
+          if git diff --quiet -- assets/images/manifest.json; then
+            echo "Manifest unchanged, nothing to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/images/manifest.json
+          git commit -m "chore: auto-update gallery manifest"
+          git push

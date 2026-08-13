@@ -4,17 +4,20 @@ A beautiful, fully static website for The Balloon Attic - a professional balloon
 
 ## 🎈 Live Site
 
-Visit the website at: **[balloons.irish](https://balloons.irish)**
+Visit the website at: **[theballoonattic.ie](https://theballoonattic.ie)**
+
+`westcorkballoons.ie` and `balloons.irish` also redirect here.
 
 ## ✨ Features
 
-- **Fully Static**: No build process required - pure HTML, CSS, and JavaScript
+- **Fully Static**: No build process required to run the site - pure HTML, CSS, and JavaScript
 - **Responsive Design**: Optimized for all devices from mobile to desktop
 - **Animated Balloons**: CSS-powered floating balloon animations
-- **Interactive Gallery**: Modal-based image gallery with keyboard navigation
+- **Folder Highlights**: Instagram-highlights-style balloon buttons that group the gallery by occasion (Birthdays, Christenings, Special Days, Events, Weddings, Easter, Christmas, Halloween) — this **is** the gallery, see [Gallery Folders](#-gallery-folders) below
+- **Interactive Gallery**: Tap a balloon to open an immersive lightbox scoped to that occasion's photos, with keyboard navigation and swipe support
 - **Smooth Animations**: Scroll-triggered reveal animations using Intersection Observer
-- **Accessibility**: WCAG compliant with proper focus management and keyboard navigation
-- **Performance**: Optimized images with lazy loading and efficient CSS
+- **Accessibility**: WCAG 2.1 AA color contrast, full keyboard support, and dialog focus management
+- **Performance**: Lazy-loaded images and efficient CSS
 - **SEO Friendly**: Semantic HTML structure with proper meta tags
 
 ## 🛠️ Technology Stack
@@ -35,31 +38,76 @@ The website uses a carefully crafted design system with:
 - **Animation**: Smooth transitions and meaningful motion
 - **Components**: Reusable CSS components for cards, buttons, and layout
 
-## � Project Structure
+## 📁 Project Structure
 
 ```
-├── index.html              # Main HTML file
+├── index.html                       # Main HTML file
 ├── styles/
-│   ├── main.css            # Core styles and design system
-│   ├── components.css      # Component styles and utilities
-│   └── animations.css      # Animation keyframes and transitions
+│   ├── main.css                     # Core styles, design system, gallery + folder highlights
+│   ├── components.css               # Component styles and utilities
+│   └── animations.css               # Animation keyframes and transitions
 ├── scripts/
-│   └── main.js            # JavaScript functionality
+│   ├── main.js                      # Site + gallery JavaScript
+│   └── generate-manifest.js         # Rebuilds assets/images/manifest.json from disk
 ├── assets/
-│   └── images/            # Gallery images
+│   └── images/
+│       ├── manifest.json            # Auto-generated — don't edit by hand
+│       ├── birthdays/                 } one folder per gallery
+│       ├── christenings/              } highlight — drop photos
+│       ├── special-days/              } straight in, see
+│       ├── events/                    } "Gallery Folders" below
+│       ├── weddings/                  }
+│       ├── easter/                    }
+│       ├── christmas/                 }
+│       └── halloween/                 }
 ├── public/
-│   └── CNAME              # Custom domain configuration
+│   └── CNAME                        # Custom domain configuration
 └── .github/
     └── workflows/
-        └── deploy.yml     # GitHub Actions deployment
+        └── update-gallery-manifest.yml  # Auto-regenerates manifest.json on push
 ```
+
+## 🎈 Gallery Folders
+
+The gallery is organised into eight occasion folders under `assets/images/`,
+shown as balloon "highlights" — tap one to open a full-screen lightbox with
+just that occasion's photos. There's no separate "browse everything" view;
+the folder highlights are the entire gallery, the same way Instagram
+Highlights work.
+
+**To add photos: drop the image file(s) straight into the matching folder and
+push to `main`.** That's the entire workflow — nothing else to configure:
+
+| Folder | Shows as |
+|---|---|
+| `assets/images/birthdays/` | Birthdays 🎂 |
+| `assets/images/christenings/` | Christenings ⛪️ |
+| `assets/images/special-days/` | Special Days 💫 |
+| `assets/images/events/` | Events 🗓️🎈 |
+| `assets/images/weddings/` | Weddings 🤍 |
+| `assets/images/easter/` | Easter 🐣 |
+| `assets/images/christmas/` | Christmas 🎄 |
+| `assets/images/halloween/` | Halloween 🎃 |
+
+A GitHub Action (`.github/workflows/update-gallery-manifest.yml`) watches for
+image changes under `assets/images/`, regenerates `assets/images/manifest.js`
++ `assets/images/manifest.json` automatically, and commits them back — so the
+site always reflects exactly what's in each folder, with no manual editing.
+An occasion's balloon only appears once its folder has at least one photo in
+it; empty folders are left out of the highlights row entirely.
+
+To preview locally after adding photos, before pushing: run
+`node scripts/generate-manifest.js` once, then just open `index.html` —
+no local server needed. (The gallery reads `assets/images/manifest.js`, a
+plain `<script>` tag rather than a fetched JSON file, specifically so it
+still works when the page is opened directly via `file://`.)
 
 ## 🚀 Deployment
 
 The site is automatically deployed to GitHub Pages using GitHub Actions:
 
 1. **Automatic**: Push to `main` branch triggers deployment
-2. **Custom Domain**: Configured to serve at `balloons.irish`
+2. **Custom Domain**: Configured to serve at `theballoonattic.ie` (`westcorkballoons.ie` and `balloons.irish` redirect here)
 3. **HTTPS**: Automatically enabled with SSL certificate
 4. **CDN**: Global content delivery via GitHub Pages
 

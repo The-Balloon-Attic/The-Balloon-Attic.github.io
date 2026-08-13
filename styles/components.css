@@ -10,7 +10,6 @@
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.9);
-    animation: modalFadeIn 0.3s ease-out;
 }
 
 .modal.active {
@@ -19,15 +18,62 @@
     justify-content: center;
 }
 
+/* Plain fade/scale entrance — the fallback used when there's no click
+   origin to fly from (shouldn't normally happen, but keeps the modal
+   functional) or the visitor prefers reduced motion. The usual path is the
+   JS-driven fly-open transition below (.modal.flying), which replaces this
+   entirely. */
+.modal.active.enter-fade {
+    animation: modalFadeIn 0.3s ease-out;
+}
+
 .modal-content {
     position: relative;
     max-width: 85vw;
     max-height: 85vh;
     margin: auto;
-    animation: modalSlideIn 0.3s ease-out;
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+/* Slightly offset from the backdrop fade above so the two don't pop in as
+   one flat event — `backwards` holds the 0% (invisible) state through the
+   delay instead of flashing the settled image first. */
+.modal-content.enter-scale {
+    animation: modalSlideIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) 80ms backwards;
+}
+
+/* Fly-open transition (see flyModalOpen() in main.js): modal-content is
+   driven by inline styles from its origin balloon's rect to its centered
+   layout position, so the built-in entrance animations above are skipped
+   entirely, and the chrome (close/nav/footer) stays hidden until the flight
+   settles rather than popping in over top of it. */
+.modal.flying .modal-close,
+.modal.flying .modal-nav,
+.modal.flying .modal-footer {
+    opacity: 0;
+    transition: none;
+}
+
+/* The old single-view carousel (.single-image-item) had `transition: all`
+   unconditionally, which — combined with .loading being a fixed-size box and
+   .loaded being width/height:auto — meant the box visibly grew/shrank from
+   the shimmer skeleton's fixed rectangle into the next photo's true
+   aspect-ratio size, rather than snapping straight to it. Scoped to
+   :not(.loading) here (rather than unconditional) so entering the loading
+   state still stays an instant hard cut, matching the fix above — only the
+   reveal (loading -> settled size) animates. */
+.modal-content:not(.loading) {
+    width: auto;
+    height: auto;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .modal-content:not(.loading) {
+        transition: none;
+    }
 }
 
 .modal-content img {
@@ -37,12 +83,70 @@
     max-height: 85vh;
     border-radius: var(--radius-lg);
     object-fit: contain;
+    opacity: 0;
+    transform: scale(0.98);
+    /* Only the fade-IN is transitioned (below, on .loaded) — matches the old
+       single-view carousel, which built a brand new element per navigation
+       and so always cut to the loading skeleton instantly, never crossfaded
+       out of the previous photo. A crossfade-out here made the shimmer step
+       barely register for fast local image loads. */
+}
+
+.modal-content img.loaded {
+    opacity: 1;
+    transform: scale(1);
+    transition: opacity 0.4s ease-out, transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Shimmer skeleton while the next/prev image loads, instead of leaving a
+   blank gap — reinstates the loading treatment the old single-view carousel
+   had (.single-image-item.loading), now applied to the shared lightbox.
+   Fixed (not min-) dimensions, matching the old skeleton exactly, so the box
+   always reads as a clear, consistently-sized loading state rather than
+   inheriting whatever size the previous photo happened to be. */
+.modal-content.loading {
+    width: 500px;
+    max-width: 90vw;
+    height: 400px;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.06) 25%,
+        rgba(255, 255, 255, 0.18) 50%,
+        rgba(255, 255, 255, 0.06) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+/* While flying (see flyModalOpen() in main.js), the balloon's own photo is
+   shown via an inline `background` instead of the shimmer — stop the
+   shimmer's background-position keyframe so it doesn't fight that inline
+   style (running animations override inline styles for the properties they
+   animate, which would otherwise pan the photo during the flight). */
+.modal-content.loading.flying {
+    animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .modal-content img.loaded {
+        transition: opacity 0.01ms ease;
+        transform: none;
+    }
+
+    .modal-content.loading {
+        animation: none;
+        background: rgba(255, 255, 255, 0.1);
+    }
 }
 
 .modal-close {
     position: fixed;
     top: 20px;
     right: 20px;
+    border: none;
+    font-family: inherit;
+    line-height: 1;
     color: white;
     font-size: 2rem;
     font-weight: bold;
@@ -54,8 +158,9 @@
     justify-content: center;
     border-radius: 50%;
     background-color: rgba(0, 0, 0, 0.5);
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, opacity 0.3s ease;
     z-index: 1001;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .modal-close:hover {
@@ -103,6 +208,118 @@
     right: 20px;
 }
 
+/* Modal Footer — dot indicators + "X / Y" counter, scoped to the folder
+   currently open in the lightbox. */
+.modal-footer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 18px;
+    z-index: 1001;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.modal-indicators {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    max-width: min(90vw, 420px);
+    pointer-events: auto;
+}
+
+.modal-indicators[hidden] {
+    display: none;
+}
+
+.modal-indicator {
+    display: block;
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.35);
+    cursor: pointer;
+    font: inherit;
+    appearance: none;
+    -webkit-appearance: none;
+    transition: all var(--transition-normal);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.modal-indicator:hover {
+    background: rgba(255, 255, 255, 0.6);
+}
+
+.modal-indicator.active {
+    background: #ffffff;
+    transform: scale(1.25);
+}
+
+.modal-indicator:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+}
+
+/* Grid-view toggle — same white-pill-with-icon language as the old
+   .grid-toggle-btn, sized to fit the modal footer instead of the full page
+   width it used to span. */
+.modal-grid-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 240px;
+    padding: 0.65rem;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 2px solid var(--color-accent-purple);
+    border-radius: var(--radius-xl);
+    color: var(--color-accent-purple);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--shadow-md);
+    pointer-events: auto;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.modal-grid-toggle svg {
+    transition: transform 0.3s ease;
+}
+
+.modal-grid-toggle:hover {
+    background: var(--color-accent-purple);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.modal-grid-toggle:hover svg {
+    transform: scale(1.1);
+}
+
+.modal-grid-toggle:active {
+    transform: translateY(0) scale(0.98);
+}
+
+@media (max-width: 768px) {
+    .modal-footer {
+        bottom: 14px;
+    }
+
+    .modal-grid-toggle {
+        max-width: 200px;
+        padding: 0.55rem;
+    }
+}
+
 @media (max-width: 768px) {
     .modal-close {
         top: 15px;
@@ -121,21 +338,27 @@
         max-height: 75vh;
         border-radius: var(--radius-md);
     }
-    
+
+    .modal-content.loading {
+        width: 90vw;
+        max-width: 400px;
+        height: 350px;
+    }
+
     .modal-nav {
         width: 40px;
         height: 40px;
     }
-    
+
     .modal-nav svg {
         width: 20px;
         height: 20px;
     }
-    
+
     .modal-nav-prev {
         left: 10px;
     }
-    
+
     .modal-nav-next {
         right: 10px;
     }
@@ -158,6 +381,12 @@
     
     .modal-content img {
         max-height: 70vh;
+    }
+
+    .modal-content.loading {
+        width: 85vw;
+        max-width: 320px;
+        height: 300px;
     }
 }
 
@@ -244,15 +473,6 @@
     border-top-color: var(--color-accent);
     border-radius: 50%;
     animation: spin 1s linear infinite;
-}
-
-/* Gallery Loading */
-.gallery-loading {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 2rem;
-    color: var(--color-muted-foreground);
-    font-style: italic;
 }
 
 @keyframes spin {
@@ -511,5 +731,243 @@
         height: 56px;
         bottom: 1.5rem;
         right: 1.5rem;
+    }
+}
+
+/* ============================================
+   Category Grid View — one shared implementation
+   (#category-grid-modal) reused by every folder highlight.
+   Opened via .modal-grid-toggle in the lightbox footer; shows
+   every photo in whichever category is currently open, so
+   there is no per-category duplication anywhere in this file
+   or in scripts/main.js. Styling reinstated from the site's
+   original grid view.
+   ============================================ */
+.grid-modal {
+    display: none;
+    position: fixed;
+    z-index: 1100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0);
+    overflow-y: auto;
+    opacity: 0;
+    -webkit-transition: background-color 0.4s ease, opacity 0.4s ease;
+    transition: background-color 0.4s ease, opacity 0.4s ease;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+
+.grid-modal.active {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+.grid-modal.visible {
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.85);
+}
+
+.grid-modal-content {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    background: var(--color-cream);
+    border-radius: var(--radius-2xl);
+    padding: 2rem;
+    padding-top: 3.5rem;
+    box-shadow: var(--shadow-2xl);
+    -webkit-transform: scale(0.9) translateY(30px);
+    transform: scale(0.9) translateY(30px);
+    opacity: 0;
+    -webkit-transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.grid-modal.visible .grid-modal-content {
+    -webkit-transform: scale(1) translateY(0);
+    transform: scale(1) translateY(0);
+    opacity: 1;
+}
+
+.grid-modal.closing .grid-modal-content {
+    -webkit-transform: scale(0.9) translateY(30px);
+    transform: scale(0.9) translateY(30px);
+    opacity: 0;
+}
+
+.grid-modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(176, 132, 166, 0.1);
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--color-accent-purple);
+    -webkit-tap-highlight-color: transparent;
+    z-index: 10;
+}
+
+.grid-modal-close:hover {
+    background: var(--color-accent-purple);
+    color: white;
+    transform: scale(1.1);
+}
+
+.grid-modal-close:active {
+    transform: scale(0.95);
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.grid-item {
+    background-color: var(--color-card);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-tap-highlight-color: transparent;
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+    position: relative;
+    aspect-ratio: 3/4;
+}
+
+@supports not (aspect-ratio: 3/4) {
+    .grid-item {
+        height: 0;
+        padding-bottom: 133.33%;
+    }
+
+    .grid-item img {
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+}
+
+.grid-item.loading {
+    background: linear-gradient(
+        90deg,
+        var(--color-card) 25%,
+        var(--color-accent-lavender) 50%,
+        var(--color-card) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+.grid-item.loading img {
+    opacity: 0;
+}
+
+.grid-item.loaded img {
+    opacity: 1;
+}
+
+.grid-item.visible {
+    -webkit-animation: gridItemFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation: gridItemFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.grid-item:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: var(--shadow-xl);
+}
+
+.grid-item:active {
+    transform: translateY(-2px) scale(0.98);
+}
+
+.grid-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    pointer-events: none;
+    -webkit-user-drag: none;
+    transition: transform 0.3s ease, opacity 0.4s ease;
+    min-height: 100%;
+    min-width: 100%;
+}
+
+.grid-item:hover img {
+    transform: scale(1.05);
+}
+
+.grid-item:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+    .grid-modal.active {
+        padding: 2rem 1rem;
+    }
+
+    .grid-modal-content {
+        padding: 1.5rem;
+        padding-top: 3rem;
+        border-radius: var(--radius-xl);
+        max-height: 85vh;
+        overflow-y: auto;
+    }
+
+    .grid-modal-close {
+        top: 0.75rem;
+        right: 0.75rem;
+        width: 40px;
+        height: 40px;
+    }
+
+    .grid-container {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .grid-modal.active {
+        padding: 2.5rem 1rem;
+    }
+
+    .grid-modal-content {
+        max-height: 80vh;
+        padding: 1rem;
+        padding-top: 2.5rem;
+    }
+
+    .grid-container {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 0.5rem;
+    }
+
+    .grid-item {
+        border-radius: var(--radius-md);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .grid-item {
+        opacity: 1;
+        transform: none;
+        animation: none !important;
     }
 }

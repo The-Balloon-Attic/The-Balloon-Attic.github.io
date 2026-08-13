@@ -2,6 +2,28 @@
 
 /* Keyframe Definitions */
 
+/* Shared shimmer skeleton, used while an image loads — the lightbox's main
+   photo (.modal-content.loading) and the category grid view's thumbnails
+   (.grid-item.loading) both reference this one keyframe. */
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+/* Staggered entrance for each thumbnail in the category grid view. */
+@keyframes gridItemFadeIn {
+    0% {
+        opacity: 0;
+        -webkit-transform: translateY(20px);
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        -webkit-transform: translateY(0);
+        transform: translateY(0);
+    }
+}
+
 @keyframes heroFadeIn {
     from {
         opacity: 0;
@@ -43,6 +65,25 @@
     }
     75% {
         transform: translate(-50%, -50%) translateY(-8px) rotate(calc(var(--tilt) - 2deg));
+    }
+}
+
+/* Same gentle bob-and-tilt as the hero balloons (balloonFloat above), scaled
+   for the much smaller gallery folder highlights and without the center-
+   anchoring translate(-50%,-50%) those need for absolute positioning — the
+   folder highlights stay in normal flex flow. */
+@keyframes folderBalloonFloat {
+    0%, 100% {
+        transform: translateY(0) rotate(var(--tilt, 0deg));
+    }
+    25% {
+        transform: translateY(-4px) rotate(calc(var(--tilt, 0deg) + 2deg));
+    }
+    50% {
+        transform: translateY(-7px) rotate(var(--tilt, 0deg));
+    }
+    75% {
+        transform: translateY(-4px) rotate(calc(var(--tilt, 0deg) - 2deg));
     }
 }
 
@@ -89,14 +130,32 @@
     }
 }
 
+/* .modal-content is centered by its flex parent (margin: auto), not by
+   absolute positioning, so this only needs to animate scale/opacity — no
+   translate(-50%, -50%) offset to correct for. */
 @keyframes modalSlideIn {
     from {
         opacity: 0;
-        transform: translate(-50%, -50%) scale(0.9);
+        transform: scale(0.9);
     }
     to {
         opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
+        transform: scale(1);
+    }
+}
+
+/* Balloon "pop" click feedback (see populateFolderHighlights() in main.js) —
+   a quick squash-and-settle, distinct from the hover lift, that plays the
+   moment a folder balloon is clicked. */
+@keyframes balloonPop {
+    0% {
+        transform: scale(1);
+    }
+    35% {
+        transform: scale(0.86);
+    }
+    100% {
+        transform: scale(1);
     }
 }
 
@@ -108,32 +167,6 @@
     100% {
         opacity: 1;
         transform: scale(1);
-    }
-}
-
-@keyframes gridItemFadeIn {
-    0% {
-        opacity: 0;
-        -webkit-transform: translateY(20px);
-        transform: translateY(20px);
-    }
-    100% {
-        opacity: 1;
-        -webkit-transform: translateY(0);
-        transform: translateY(0);
-    }
-}
-
-@-webkit-keyframes gridItemFadeIn {
-    0% {
-        opacity: 0;
-        -webkit-transform: translateY(20px);
-        transform: translateY(20px);
-    }
-    100% {
-        opacity: 1;
-        -webkit-transform: translateY(0);
-        transform: translateY(0);
     }
 }
 
@@ -368,5 +401,12 @@
     
     .instagram-button:hover {
         transform: none !important;
+    }
+
+    /* main.js already skips the fly-open transition and balloon pop under
+       reduced motion; this covers the plain fallback entrance it uses
+       instead, so the lightbox still appears without a scale/slide motion. */
+    .modal-content.enter-scale {
+        animation: modalFadeIn 0.2s ease-out !important;
     }
 }
