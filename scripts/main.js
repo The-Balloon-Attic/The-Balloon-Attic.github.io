@@ -80,12 +80,13 @@ function initializeImageGallery() {
             // 🌟 FEATURED IMAGES (Edit these to change your top 5)
             // These will always appear first, in this exact order
             featured: [
-                'IMG_0581.jpeg',
-                'IMG_0580.jpeg',
-                'IMG_0588.jpeg',
-                'IMG_0779.jpeg',
-                'IMG_8020.jpeg',
-                'IMG_8359.jpeg',
+                'IMG_1088.jpeg',
+                'IMG_1273.jpeg',
+                'IMG_1956.jpeg',
+                'IMG_2046.jpeg',
+                'IMG_1889.jpeg',
+                'IMG_2460.jpeg',
+                'IMG_2455.jpeg'
             ],
 
             // 📋 ORDERING OPTIONS for non-featured images:
@@ -99,6 +100,26 @@ function initializeImageGallery() {
     // Fallback image list used if manifest loading fails
     function getFallbackImages() {
         return [
+            'IMG_2626.jpeg',
+            'IMG_1889.jpeg',
+            'IMG_0945.jpeg',
+            'IMG_1088.jpeg',
+            'IMG_1274.jpeg',
+            'IMG_1273.jpeg',
+            'IMG_1299.jpeg',
+            'IMG_1337.jpeg',
+            'IMG_1391.jpeg',
+            'IMG_1855.jpeg',
+            'IMG_8326.jpeg',
+            'IMG_1953.jpeg',
+            'IMG_1956.jpeg',
+            'IMG_2009.jpeg',
+            'IMG_2046.jpeg',
+            'IMG_2059.jpeg',
+            'IMG_2453.jpeg',
+            'IMG_2455.jpeg',
+            'IMG_2460.jpeg',
+            'IMG_2462.jpeg',
             'IMG_0580.jpeg',
             'IMG_0581.jpeg',
             'IMG_0588.jpeg',
