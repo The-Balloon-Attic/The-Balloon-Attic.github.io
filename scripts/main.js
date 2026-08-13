@@ -84,9 +84,9 @@ function initializeImageGallery() {
                 'IMG_1273.jpeg',
                 'IMG_1956.jpeg',
                 'IMG_2046.jpeg',
-                'IMG_1889.jpeg',
-                'IMG_2460.jpeg',
-                'IMG_2455.jpeg'
+                'IMG_1889.jpeg'
+                // 'IMG_2460.jpeg',
+                // 'IMG_2455.jpeg'
             ],
 
             // 📋 ORDERING OPTIONS for non-featured images:
