@@ -58,6 +58,96 @@
     <link rel="stylesheet" href="styles/animations.css">
 </head>
 <body>
+    
+<!-- Christmas Elf Arrivals Pop-up -->
+<style>
+  .elf-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+  }
+  .elf-popup {
+    position: relative;
+    background: #fff9f5;
+    border: 3px solid #a72d3b;
+    border-radius: 18px;
+    padding: 22px;
+    max-width: 440px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    text-align: center;
+    color: #354c3b;
+    box-sizing: border-box;
+  }
+  .elf-close {
+    position: absolute;
+    right: 10px;
+    top: 8px;
+    background: transparent;
+    border: none;
+    font-size: 30px;
+    color: #a72d3b;
+    cursor: pointer;
+  }
+  .elf-photos {
+    display: flex;
+    gap: 8px;
+    margin: 15px 0;
+  }
+  .elf-photos img {
+    width: 50%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+  .elf-button {
+    display: inline-block;
+    padding: 13px 25px;
+    background: #a72d3b;
+    color: white;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: bold;
+  }
+</style>
+
+<div class="elf-overlay" id="elfOverlay">
+  <div class="elf-popup" role="dialog"
+       aria-modal="true"
+       aria-label="Christmas Elf Arrivals">
+    <button class="elf-close" type="button"
+      aria-label="Close Christmas announcement"
+      onclick="document.getElementById('elfOverlay').remove()">
+      &times;
+    </button>
+
+    <h2>🎄 ELF ARRIVALS 2026 🎄</h2>
+    <h3>NOW TAKING ORDERS!</h3>
+
+    <div class="elf-photos">
+      <img src="assets/images/elf-arrival-1.jpg"
+           alt="North Pole elf arrival balloon display">
+      <img src="assets/images/elf-arrival-2.jpg"
+           alt="Christmas elf arrival balloon houses">
+    </div>
+
+    <p>Make your little one's elf return
+       extra magical this Christmas! ❤️</p>
+
+    <a class="elf-button"
+       href="mailto:balloonatticwestcork@icloud.com?subject=Christmas%20Elf%20Arrival%20Enquiry">
+       ENQUIRE NOW 🎅
+    </a>
+  </div>
+</div>
+<!-- End Christmas Pop-up -->
+
     <main>
     <!-- Hero Section -->
     <section id="hero" class="hero-section">
