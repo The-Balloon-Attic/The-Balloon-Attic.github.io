@@ -27,8 +27,7 @@ window.__GALLERY_MANIFEST__ = {
     "IMG_7212.jpeg",
     "IMG_7427.jpeg",
     "IMG_7881.jpeg",
-    "IMG_7913.jpeg",
-    "IMG_8359.jpeg"
+    "IMG_7913.jpeg"
   ],
   "christenings": [
     "IMG_1274.jpeg",
