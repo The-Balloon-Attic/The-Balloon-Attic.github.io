@@ -117,7 +117,7 @@
   }
 </style>
 
-<div class="elf-overlay" id="elfOverlay">
+<div class="elf-overlay" id="elfOverlay" style="display:none;">
   <div class="elf-popup" role="dialog"
        aria-modal="true"
        aria-label="Christmas Elf Arrivals">
@@ -147,7 +147,16 @@
   </div>
 </div>
 <!-- End Christmas Pop-up -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const popup = document.getElementById('elfOverlay');
 
+  if (!sessionStorage.getItem('elfPopupSeen')) {
+    popup.style.display = 'flex';
+    sessionStorage.setItem('elfPopupSeen', 'yes');
+  }
+});
+</script>
     <main>
     <!-- Hero Section -->
     <section id="hero" class="hero-section">
