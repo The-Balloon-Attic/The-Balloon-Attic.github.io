@@ -26,7 +26,7 @@ Visit the website at: **[theballoonattic.ie](https://theballoonattic.ie)**
 - **CSS3**: Custom properties, Grid, Flexbox, and modern animations
 - **Vanilla JavaScript**: ES6+ with modern APIs (Intersection Observer, etc.)
 - **GitHub Pages**: Static site hosting
-- **GitHub Actions**: Automated deployment
+- **GitHub Actions**: Keeps the gallery manifest in sync and triggers Pages rebuilds
 
 ## 🎨 Design System
 
@@ -48,10 +48,11 @@ The website uses a carefully crafted design system with:
 │   └── animations.css               # Animation keyframes and transitions
 ├── scripts/
 │   ├── main.js                      # Site + gallery JavaScript
-│   └── generate-manifest.js         # Rebuilds assets/images/manifest.json from disk
+│   └── generate-manifest.js         # Rebuilds assets/images/manifest.js + .json from disk
 ├── assets/
 │   └── images/
-│       ├── manifest.json            # Auto-generated — don't edit by hand
+│       ├── manifest.js              # Auto-generated, loaded by the site — don't edit by hand
+│       ├── manifest.json            # Same data as JSON (fallback) — don't edit by hand
 │       ├── birthdays/                 } one folder per gallery
 │       ├── christenings/              } highlight — drop photos
 │       ├── special-days/              } straight in, see
@@ -60,11 +61,10 @@ The website uses a carefully crafted design system with:
 │       ├── easter/                    }
 │       ├── christmas/                 }
 │       └── halloween/                 }
-├── public/
-│   └── CNAME                        # Custom domain configuration
+├── CNAME                            # Custom domain (theballoonattic.ie) for GitHub Pages
 └── .github/
     └── workflows/
-        └── update-gallery-manifest.yml  # Auto-regenerates manifest.json on push
+        └── update-gallery-manifest.yml  # Regenerates the manifest on photo changes + rebuilds Pages
 ```
 
 ## 🎈 Gallery Folders
@@ -91,8 +91,11 @@ push to `main`.** That's the entire workflow — nothing else to configure:
 
 A GitHub Action (`.github/workflows/update-gallery-manifest.yml`) watches for
 image changes under `assets/images/`, regenerates `assets/images/manifest.js`
-+ `assets/images/manifest.json` automatically, and commits them back — so the
-site always reflects exactly what's in each folder, with no manual editing.
++ `assets/images/manifest.json` automatically, commits them back, and requests
+a GitHub Pages rebuild — so the site always reflects exactly what's in each
+folder, with no manual editing. Uploading through the github.com "Upload files"
+button works too, and any file-name case (`.jpg`, `.JPG`, `.jpeg`…) is picked up.
+Browsers can't show iPhone `.HEIC` photos, so upload `.jpg`/`.png` instead.
 An occasion's balloon only appears once its folder has at least one photo in
 it; empty folders are left out of the highlights row entirely.
 
@@ -104,9 +107,9 @@ still works when the page is opened directly via `file://`.)
 
 ## 🚀 Deployment
 
-The site is automatically deployed to GitHub Pages using GitHub Actions:
+The site is served by GitHub Pages straight from the `main` branch (root folder):
 
-1. **Automatic**: Push to `main` branch triggers deployment
+1. **Automatic**: every push to `main` triggers a Pages build ("pages build and deployment")
 2. **Custom Domain**: Configured to serve at `theballoonattic.ie` (`westcorkballoons.ie` and `balloons.irish` redirect here)
 3. **HTTPS**: Automatically enabled with SSL certificate
 4. **CDN**: Global content delivery via GitHub Pages

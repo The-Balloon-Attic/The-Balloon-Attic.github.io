@@ -1,23 +1,25 @@
 name: Update Gallery Manifest
 
-# Keeps assets/images/manifest.json in sync with what's actually in the gallery
-# folders, so adding/removing/renaming a photo is the only step anyone needs to
-# take — no manual JSON editing. Triggered only by image file changes (never by
-# manifest.json itself), so it can never trigger itself in a loop.
+# Keeps the gallery index (assets/images/manifest.js, which the site loads, and
+# manifest.json, the same data as plain JSON) in sync with what's actually in
+# the gallery folders, then asks GitHub Pages to rebuild so the live site shows
+# the change. Adding/removing a photo in assets/images/<category>/ — including
+# through the github.com "Upload files" button — is the only step anyone needs.
+#
+# The path filter is deliberately broad ("assets/images/**") because GitHub's
+# path filters are case-sensitive and phone photos are often named IMG_1234.JPG
+# or .JPEG. The bot's own commit can't re-trigger this workflow (pushes made
+# with GITHUB_TOKEN never start new workflow runs), so there's no loop.
 on:
   push:
     branches: [main]
     paths:
-      - "assets/images/**/*.jpg"
-      - "assets/images/**/*.jpeg"
-      - "assets/images/**/*.png"
-      - "assets/images/**/*.webp"
-      - "assets/images/**/*.gif"
-      - "assets/images/**/*.avif"
+      - "assets/images/**"
   workflow_dispatch: {}
 
 permissions:
-  contents: write
+  contents: write # commit the regenerated manifest
+  pages: write    # request a GitHub Pages rebuild
 
 concurrency:
   group: update-gallery-manifest
@@ -28,24 +30,52 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      - name: Regenerate manifest
-        run: node scripts/generate-manifest.js
-
-      - name: Commit manifest if it changed
+      - name: Regenerate, commit and push manifest
+        id: manifest
         run: |
-          if git diff --quiet -- assets/images/manifest.json; then
-            echo "Manifest unchanged, nothing to commit."
-            exit 0
-          fi
+          set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add assets/images/manifest.json
-          git commit -m "chore: auto-update gallery manifest"
-          git push
+
+          # Retry a few times in case someone pushes to main while we run:
+          # each attempt starts from the latest main and regenerates from scratch.
+          for attempt in 1 2 3; do
+            git fetch --quiet origin main
+            git reset --quiet --hard origin/main
+            node scripts/generate-manifest.js
+
+            if git diff --quiet -- assets/images/manifest.js assets/images/manifest.json; then
+              echo "Manifest unchanged, nothing to commit."
+              echo "changed=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+
+            git add assets/images/manifest.js assets/images/manifest.json
+            git commit --quiet -m "chore: auto-update gallery manifest"
+            if git push --quiet origin HEAD:main; then
+              echo "Manifest updated and pushed (attempt $attempt)."
+              echo "changed=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            echo "Push rejected (main moved on), retrying..."
+            sleep $((attempt * 5))
+          done
+
+          echo "::error::Could not push the updated manifest after 3 attempts."
+          exit 1
+
+      - name: Rebuild GitHub Pages
+        if: steps.manifest.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Make sure the site is rebuilt from the commit that includes the new
+          # manifest (the photo upload itself already started a build, but that
+          # one still has the old manifest).
+          if gh api -X POST "repos/${GITHUB_REPOSITORY}/pages/builds" --silent; then
+            echo "GitHub Pages rebuild requested."
+          else
+            echo "::warning::Couldn't request a Pages rebuild; the site will update on the next push."
+          fi
