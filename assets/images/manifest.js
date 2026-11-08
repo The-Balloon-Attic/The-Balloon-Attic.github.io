@@ -91,5 +91,8 @@ window.__GALLERY_MANIFEST__ = {
     "IMG_5366.jpeg",
     "IMG_7325.jpeg"
   ],
-  "uncategorized": []
+  "uncategorized": [
+    "elf-arrival-1.jpg",
+    "elf-arrival-2.png"
+  ]
 };
