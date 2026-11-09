@@ -114,7 +114,7 @@ section {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #F8F3EC;
+    background-color: #F8F3EC !important;
     overflow: hidden;
 }
 
