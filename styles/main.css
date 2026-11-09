@@ -150,7 +150,7 @@ section {
 /* Attic House Styles - Based on provided snippet */
 .attic-house {
     position: relative;
-    margin: 0 auto 2rem;
+ margin: 0 auto 0.75rem;
     opacity: 0;
     animation: houseFadeIn 1s ease-out 0.5s forwards;
 }
