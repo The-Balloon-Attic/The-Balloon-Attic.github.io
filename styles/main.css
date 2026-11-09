@@ -44,7 +44,7 @@ body {
     --color-accent-purple-deep: #623a58;
 
     /* Semantic Colors */
-    --color-background: var(--color-primary-pink);
+--color-background: #F8F3EC;
     --color-foreground: var(--color-text-primary);
     --color-card: var(--color-cream);
     --color-card-foreground: var(--color-text-primary);
