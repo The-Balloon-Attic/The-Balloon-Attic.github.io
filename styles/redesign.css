@@ -34,7 +34,7 @@
     --ba-raspberry: #b5586f;
 
     --ba-font-serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
-    --ba-font-script: 'Tangerine', cursive;
+    --ba-font-script: 'Great Vibes', 'Snell Roundhand', 'Brush Script MT', cursive;
     --ba-font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
 
     --ba-radius: 28px;
@@ -85,10 +85,10 @@ html { scroll-padding-top: calc(var(--ba-header-h) + 8px); }
 
 .ba-script {
     font-family: var(--ba-font-script);
-    font-weight: 700;
+    font-weight: 400;
     color: var(--ba-raspberry);
-    font-size: 1.35em;
-    line-height: 0.8;
+    font-size: 1.12em;
+    line-height: 1.15;
     letter-spacing: 0;
 }
 
@@ -283,8 +283,8 @@ html { scroll-padding-top: calc(var(--ba-header-h) + 8px); }
 }
 .ba-hero-title .ba-script {
     display: block;
-    margin-top: 0.12em;
-    font-size: 1.5em;
+    margin-top: 0.04em;
+    font-size: 1.32em;
 }
 
 .ba-lead {
