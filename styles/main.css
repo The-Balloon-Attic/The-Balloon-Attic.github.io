@@ -741,11 +741,11 @@ a:focus-visible {
         page-break-inside: avoid;
     }
 }
-.hero-title::after {
+.hero-content .hero-title::after {
   content: "";
   display: block;
-  width: 90px;
-  height: 1px;
-  background-color: #C9A45C;
+  width: 100px;
+  height: 2px;
+  background: #C9A45C;
   margin: 20px auto 0;
 }
