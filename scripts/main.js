@@ -203,7 +203,13 @@ function initializeImageGallery() {
             const thumb = button.querySelector('.folder-balloon-thumb');
             if (thumb) {
                 thumb.addEventListener('load', () => thumb.classList.add('thumb-loaded'), { once: true });
-                thumb.src = `assets/images/${category}/${images[0]}`;
+                // Prefer the small hand-picked cover (assets/images/web/cover-<category>.jpg)
+                // so the homepage stays light on phones; fall back to the folder's first photo.
+                const fallbackSrc = `assets/images/${category}/${images[0]}`;
+                thumb.addEventListener('error', () => {
+                    if (!thumb.src.endsWith(fallbackSrc)) thumb.src = fallbackSrc;
+                }, { once: true });
+                thumb.src = `assets/images/web/cover-${category}.jpg`;
             }
 
             const shape = button.querySelector('.folder-balloon-shape');
