@@ -91,7 +91,6 @@ window.__GALLERY_MANIFEST__ = {
     "IMG_7325.jpeg"
   ],
   "uncategorized": [
-    "balloon-attic-logo.jpg..PNG",
     "elf-arrival-1.jpg",
     "elf-arrival-2.png"
   ]
