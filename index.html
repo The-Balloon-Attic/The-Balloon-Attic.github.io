@@ -1,20 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-IE">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Balloon Attic - Balloon Artist in West Cork</title>
-    <meta name="description" content="Professional balloon artistry in West Cork. Creative balloon arrangements for parties, events, and special occasions.">
-    
+    <title>The Balloon Attic | Balloon Artist in West Cork</title>
+    <meta name="description" content="The Balloon Attic is a West Cork balloon artist creating bespoke balloon arches, number towers, personalised bubble balloons and styled displays for birthdays, christenings, communions, weddings and events.">
+
+    <!-- Social sharing -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="The Balloon Attic West Cork">
+    <meta property="og:title" content="The Balloon Attic | Balloon Artist in West Cork">
+    <meta property="og:description" content="Bespoke balloon displays for birthdays, christenings, communions, weddings and events in West Cork.">
+    <meta property="og:url" content="https://theballoonattic.ie/">
+    <meta property="og:image" content="https://theballoonattic.ie/assets/images/web/hero-pink-18.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="https://theballoonattic.ie/">
+
     <!-- Favicons - All sizes for maximum compatibility -->
-    <!-- Primary favicon - PNG first for Firefox mobile compatibility -->
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="icon" href="/favicon.ico" sizes="48x48">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="shortcut icon" href="/favicon.ico">
-    
-    <!-- PNG favicons - additional sizes -->
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
     <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
     <link rel="icon" type="image/png" sizes="128x128" href="/favicon-128x128.png">
@@ -23,8 +30,8 @@
     <link rel="icon" type="image/png" sizes="256x256" href="/favicon-256x256.png">
     <link rel="icon" type="image/png" sizes="384x384" href="/favicon-384x384.png">
     <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png">
-    
-    <!-- Apple Touch Icons - all sizes -->
+
+    <!-- Apple Touch Icons -->
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
@@ -35,378 +42,337 @@
     <link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
     <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180x180.png">
-    
+
     <!-- Windows/MS tiles -->
     <meta name="msapplication-TileImage" content="/favicon-144x144.png">
     <meta name="msapplication-TileColor" content="#f2d5d8">
     <meta name="msapplication-config" content="/browserconfig.xml">
-    
+
     <!-- Web App Manifest -->
     <link rel="manifest" href="/site.webmanifest">
-    <meta name="theme-color" content="#f2d5d8">
-    
-    <!-- Preconnect for performance -->
+    <meta name="theme-color" content="#fbf6f1">
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Tangerine:wght@400;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Styles -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Tangerine:wght@400;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Styles: the three original files still power the gallery lightbox and
+         balloon highlights; redesign.css restyles the page and loads last. -->
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/components.css">
     <link rel="stylesheet" href="styles/animations.css">
+    <link rel="stylesheet" href="styles/redesign.css">
+
+    <noscript><style>.reveal-on-scroll,.folder-highlights-item{opacity:1!important;transform:none!important}</style></noscript>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "The Balloon Attic West Cork",
+      "description": "Balloon artist creating bespoke balloon displays for birthdays, christenings, communions, weddings and events in West Cork, Ireland.",
+      "url": "https://theballoonattic.ie/",
+      "image": "https://theballoonattic.ie/assets/images/web/logo-480.png",
+      "email": "balloonatticwestcork@icloud.com",
+      "areaServed": "West Cork, Ireland",
+      "sameAs": ["https://www.instagram.com/theballoonatticwestcork/"]
+    }
+    </script>
 </head>
-<body>
-    
-<!-- Christmas Elf Arrivals Pop-up -->
-<style>
-  .elf-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.7);
-    z-index: 99999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 15px;
-  }
-  .elf-popup {
-    position: relative;
-    background: #fff9f5;
-    border: 3px solid #a72d3b;
-    border-radius: 18px;
-    padding: 22px;
-    max-width: 440px;
-    width: 100%;
-    max-height: 90vh;
-    overflow-y: auto;
-    text-align: center;
-    color: #354c3b;
-    box-sizing: border-box;
-  }
-  .elf-close {
-    position: absolute;
-    right: 10px;
-    top: 8px;
-    background: transparent;
-    border: none;
-    font-size: 30px;
-    color: #a72d3b;
-    cursor: pointer;
-  }
-  .elf-photos {
-    display: flex;
-    gap: 8px;
-    margin: 15px 0;
-  }
-  .elf-photos img {
-    width: 50%;
-    aspect-ratio: 3 / 4;
-    object-fit: cover;
-    border-radius: 10px;
-  }
-  .elf-button {
-    display: inline-block;
-    padding: 13px 25px;
-    background: #a72d3b;
-    color: white;
-    border-radius: 25px;
-    text-decoration: none;
-    font-weight: bold;
-  }
-</style>
+<body class="ba-body">
 
-<div class="elf-overlay" id="elfOverlay" style="display:none;">
-  <div class="elf-popup" role="dialog"
-       aria-modal="true"
-       aria-label="Christmas Elf Arrivals">
-    <button class="elf-close" type="button"
-      aria-label="Close Christmas announcement"
-      onclick="document.getElementById('elfOverlay').remove()">
-      &times;
-    </button>
+    <!-- Reusable balloon shape for the decorative floating balloons -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+        <defs>
+            <symbol id="ba-balloon" viewBox="0 0 60 104">
+                <path d="M30 2C14 2 3 15 3 33c0 19 14 33 27 37 13-4 27-18 27-37C57 15 46 2 30 2z" fill="currentColor"/>
+                <path d="M30 70l-4.5 7h9z" fill="currentColor"/>
+                <path d="M30 77c-5 9 5 15 0 26" stroke="#5b3a56" stroke-opacity=".35" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+                <ellipse cx="19" cy="23" rx="5.5" ry="10" fill="#fff" opacity=".5" transform="rotate(-22 19 23)"/>
+            </symbol>
+        </defs>
+    </svg>
 
-    <h2>🎄 ELF ARRIVALS 2026 🎄</h2>
-    <h3>NOW TAKING ORDERS!</h3>
+    <a class="ba-skip" href="#main">Skip to content</a>
 
-    <div class="elf-photos">
-      <img src="assets/images/elf-arrival-1.jpg"
-           alt="North Pole elf arrival balloon display">
-      <img src="assets/images/elf-arrival-2.png"
-           alt="Christmas elf arrival balloon houses">
+    <!-- Christmas Elf Arrivals pop-up (shown once per visit, a moment after the page loads) -->
+    <div class="ba-elf-overlay" id="elfOverlay" hidden>
+        <div class="ba-elf-popup" role="dialog" aria-modal="true" aria-labelledby="elfTitle">
+            <button class="ba-elf-close" type="button" id="elfClose" aria-label="Close Christmas announcement">&times;</button>
+            <p class="ba-elf-kicker">Now taking orders</p>
+            <h2 id="elfTitle">Elf Arrivals 2026</h2>
+            <div class="ba-elf-photos">
+                <img src="assets/images/web/elf-arrival-1.jpg" width="520" height="924" alt="North Pole elf arrival balloon display" loading="lazy" decoding="async">
+                <img src="assets/images/web/elf-arrival-2.jpg" width="520" height="924" alt="Christmas elf arrival balloon houses" loading="lazy" decoding="async">
+            </div>
+            <p class="ba-elf-text">Make your little one's elf return extra magical this Christmas! ❤️</p>
+            <a class="ba-btn ba-btn--primary" href="mailto:balloonatticwestcork@icloud.com?subject=Christmas%20Elf%20Arrival%20Enquiry">Enquire now 🎅</a>
+        </div>
     </div>
 
-    <p>Make your little one's elf return
-       extra magical this Christmas! ❤️</p>
-
-    <a class="elf-button"
-       href="mailto:balloonatticwestcork@icloud.com?subject=Christmas%20Elf%20Arrival%20Enquiry">
-       ENQUIRE NOW 🎅
-    </a>
-  </div>
-</div>
-<!-- End Christmas Pop-up -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const popup = document.getElementById('elfOverlay');
-
-  if (!sessionStorage.getItem('elfPopupSeen')) {
-    popup.style.display = 'flex';
-    sessionStorage.setItem('elfPopupSeen', 'yes');
-  }
-});
-</script>
-    <main>
-    <!-- Hero Section -->
-    <section id="hero" class="hero-section">
-        <!-- Floating Balloons -->
-     <div class="balloons-container" style="display: none;">
-            <!-- Desktop balloons -->
-            <div class="balloons-desktop">
-                <div class="balloon balloon-1" style="--color: #f5c2b8; --size: 80px; --x: 8%; --y: 15%; --delay: 0.2s; --duration: 4s;"></div>
-                <div class="balloon balloon-2" style="--color: #c5e5d3; --size: 100px; --x: 15%; --y: 35%; --delay: 0.3s; --duration: 5s;"></div>
-                <div class="balloon balloon-3" style="--color: #d4c5d9; --size: 90px; --x: 5%; --y: 55%; --delay: 0.4s; --duration: 4.5s;"></div>
-                <div class="balloon balloon-4" style="--color: #b084a6; --size: 70px; --x: 18%; --y: 70%; --delay: 0.5s; --duration: 5.5s;"></div>
-                <div class="balloon balloon-5" style="--color: #b8d5e8; --size: 85px; --x: 12%; --y: 82%; --delay: 0.6s; --duration: 4.8s;"></div>
-                <div class="balloon balloon-6" style="--color: #f5e6a8; --size: 95px; --x: 22%; --y: 25%; --delay: 0.7s; --duration: 5.2s;"></div>
-                <div class="balloon balloon-7" style="--color: #f2d5d8; --size: 75px; --x: 88%; --y: 18%; --delay: 0.3s; --duration: 4.7s;"></div>
-                <div class="balloon balloon-8" style="--color: #c5e5d3; --size: 88px; --x: 82%; --y: 38%; --delay: 0.4s; --duration: 5.3s;"></div>
-                <div class="balloon balloon-9" style="--color: #b084a6; --size: 92px; --x: 90%; --y: 58%; --delay: 0.5s; --duration: 4.9s;"></div>
-                <div class="balloon balloon-10" style="--color: #d4c5d9; --size: 78px; --x: 85%; --y: 75%; --delay: 0.6s; --duration: 5.1s;"></div>
-                <div class="balloon balloon-11" style="--color: #f5c2b8; --size: 82px; --x: 92%; --y: 28%; --delay: 0.8s; --duration: 4.6s;"></div>
-                <div class="balloon balloon-12" style="--color: #b8d5e8; --size: 65px; --x: 3%; --y: 25%; --delay: 0.9s; --duration: 5.8s;"></div>
-                <div class="balloon balloon-13" style="--color: #f5e6a8; --size: 72px; --x: 25%; --y: 8%; --delay: 1.0s; --duration: 4.2s;"></div>
-            </div>
-            
-            <!-- Mobile balloons -->
-            <div class="balloons-mobile">
-                <div class="balloon balloon-m1" style="--color: #c5e5d3; --size: 70px; --x: 5%; --y: 12%; --delay: 0.2s; --duration: 4.5s;"></div>
-                <div class="balloon balloon-m2" style="--color: #f5c2b8; --size: 65px; --x: 8%; --y: 35%; --delay: 0.4s; --duration: 5s;"></div>
-                <div class="balloon balloon-m3" style="--color: #d4c5d9; --size: 60px; --x: 12%; --y: 65%; --delay: 0.6s; --duration: 4.8s;"></div>
-                <div class="balloon balloon-m4" style="--color: #b084a6; --size: 68px; --x: 85%; --y: 15%; --delay: 0.3s; --duration: 5.2s;"></div>
-                <div class="balloon balloon-m5" style="--color: #b8d5e8; --size: 62px; --x: 88%; --y: 40%; --delay: 0.5s; --duration: 4.9s;"></div>
-                <div class="balloon balloon-m6" style="--color: #f5e6a8; --size: 58px; --x: 82%; --y: 68%; --delay: 0.7s; --duration: 5.1s;"></div>
-            </div>
+    <!-- Header -->
+    <header class="ba-header" id="top">
+        <div class="ba-header-inner">
+            <a class="ba-brand" href="#top">
+                <img src="assets/images/web/logo-160.png" width="160" height="160" alt="">
+                <span class="ba-brand-text"><strong>The Balloon Attic</strong><small>West Cork</small></span>
+            </a>
+            <nav class="ba-nav" aria-label="Main">
+                <a href="#gallery">Gallery</a>
+                <a href="#services">What we make</a>
+                <a href="#about">About</a>
+                <a href="#contact">Contact</a>
+            </nav>
+            <a class="ba-btn ba-btn--small ba-btn--primary" href="https://wa.me/message/CKBDTBC5XFASL1" target="_blank" rel="noopener noreferrer">Enquire</a>
         </div>
+    </header>
 
-        <!-- Hero Content -->
-        <div class="hero-content">
-            
-<!-- Business Logo -->
-<div class="attic-house" style="width: 280px; max-width: 70vw; margin: 0 auto 20px;">
-  <img src="assets/images/balloon-attic-logo.jpg"
-       alt="The Balloon Attic West Cork Logo"
-       style="width: 100%; height: auto; border-radius: 50%; display: block;">
-</div>
+    <main id="main">
 
-            
-          <h1 class="hero-title" style="font-size: 24px;">
-  Making Every Celebration Magical
-</h1>
-<div style="width: 100px; height: 2px; background: #C9A45C; margin: 20px auto 0; display: block !important;"></div>
-        </div>
+        <!-- Hero -->
+        <section class="ba-hero" aria-labelledby="hero-title">
+            <svg class="ba-float ba-float--1" viewBox="0 0 60 104" aria-hidden="true"><use href="#ba-balloon"/></svg>
+            <svg class="ba-float ba-float--2" viewBox="0 0 60 104" aria-hidden="true"><use href="#ba-balloon"/></svg>
+            <svg class="ba-float ba-float--3" viewBox="0 0 60 104" aria-hidden="true"><use href="#ba-balloon"/></svg>
+            <svg class="ba-float ba-float--4" viewBox="0 0 60 104" aria-hidden="true"><use href="#ba-balloon"/></svg>
 
-        <!-- Scroll Indicator -->
-        <div class="scroll-indicator">
-            <div class="scroll-wheel">
-                <div class="scroll-dot"></div>
+            <div class="ba-hero-inner">
+                <div class="ba-hero-copy">
+                    <p class="ba-eyebrow">Balloon artist &middot; West Cork</p>
+                    <h1 id="hero-title" class="ba-hero-title">
+                        Making every celebration
+                        <span class="ba-script">magical</span>
+                    </h1>
+                    <p class="ba-lead">Bespoke balloon arches, number towers, personalised bubble balloons and beautifully styled displays for birthdays, christenings, communions, weddings and events.</p>
+                    <div class="ba-actions">
+                        <a class="ba-btn ba-btn--primary" href="https://wa.me/message/CKBDTBC5XFASL1" target="_blank" rel="noopener noreferrer">
+                            <svg width="20" height="20" viewBox="0 0 720 720" fill="currentColor" aria-hidden="true"><path d="M360,0C161.18,0,0,161.18,0,360c0,65.41,17.45,126.75,47.94,179.61L0,720l187.02-44.21c51.34,28.18,110.28,44.21,172.98,44.21,198.82,0,360-161.18,360-360S558.82,0,360,0ZM360,655.52c-60.17,0-116.13-17.98-162.82-48.87l-110.49,28.14,30.99-105.61c-33.53-47.93-53.2-106.26-53.2-169.19,0-163.21,132.31-295.52,295.52-295.52s295.52,132.31,295.52,295.52-132.31,295.52-295.52,295.52Z"/><path d="M444.35,407.52l87.1,41.06c4,1.88,6.56,5.94,6.2,10.34-.94,11.46-5.54,34.43-26.13,55.02-58.12,58.12-162.49-7.64-166.74-10.18-25.67-13.79-50.06-32.24-73.19-55.36-23.12-23.12-41.58-47.52-55.37-73.19-2.55-4.24-68.31-108.61-10.18-166.74,20.59-20.59,43.56-25.19,55.02-26.13,4.41-.36,8.46,2.2,10.34,6.2l41.07,87.1c1.94,4.12,1.09,9.02-2.13,12.24l-30.61,30.61c-6.62,6.62-8.56,16.93-4,25.11,11.17,20.03,26.19,39.32,43.59,57.07,17.75,17.4,37.04,32.43,57.07,43.59,8.18,4.56,18.48,2.62,25.11-4l30.61-30.61c3.22-3.22,8.12-4.08,12.24-2.13Z"/></svg>
+                            Message us on WhatsApp
+                        </a>
+                        <a class="ba-btn ba-btn--ghost" href="#gallery">See our work</a>
+                    </div>
+                </div>
+
+                <div class="ba-collage">
+                    <figure class="ba-arch ba-collage-a">
+                        <img src="assets/images/web/hero-pink-18.jpg" width="720" height="1280" alt="Pink number 18 balloon tower with blush and gold balloons" fetchpriority="high" decoding="async">
+                    </figure>
+                    <figure class="ba-arch ba-collage-b">
+                        <img src="assets/images/web/hero-pastel-column.jpg" width="720" height="962" alt="Pastel balloon column in pink, lilac, mint and yellow" decoding="async">
+                    </figure>
+                    <figure class="ba-arch ba-collage-c">
+                        <img src="assets/images/web/hero-communion-hoop.jpg" width="720" height="1280" alt="White and gold balloon hoop for a First Holy Communion" decoding="async">
+                    </figure>
+                    <div class="ba-badge">
+                        <img src="assets/images/web/logo-480.png" width="480" height="480" alt="The Balloon Attic West Cork" decoding="async">
+                    </div>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Gallery Section -->
-    <!--
-    ✨ Gallery Setup — fully automatic:
-    • Drop new photos straight into the matching folder, e.g. assets/images/birthdays/
-    • Commit + push — a GitHub Action regenerates assets/images/manifest.js + manifest.json for you
-    • Nothing to edit by hand; a category's balloon only appears once it has a photo in it
-    • Category folders are fixed in scripts/generate-manifest.js + index.html (data-category attributes)
-    • Previewing locally? Run `node scripts/generate-manifest.js` once after adding photos —
-      after that, index.html works even opened directly (file://), no local server needed
-    -->
-    <section id="gallery" class="gallery-section">
-        <div class="container">
-            <div class="section-header reveal-on-scroll">
-                <h2 class="section-title">Gallery</h2>
-                <p class="section-subtitle">Browse our balloon artistry creations</p>
+        <!-- Occasions ribbon -->
+        <div class="ba-ribbon" aria-label="Occasions we create balloons for">
+            <div class="ba-ribbon-track">
+                <ul>
+                    <li>Birthdays</li><li>Christenings</li><li>First Holy Communions</li><li>Confirmations</li><li>Weddings</li><li>Events</li><li>Easter</li><li>Christmas</li><li>Halloween</li>
+                </ul>
+                <ul aria-hidden="true">
+                    <li>Birthdays</li><li>Christenings</li><li>First Holy Communions</li><li>Confirmations</li><li>Weddings</li><li>Events</li><li>Easter</li><li>Christmas</li><li>Halloween</li>
+                </ul>
             </div>
         </div>
 
-        <!-- Folder Highlights — one balloon per occasion, Instagram-highlights style.
-             Deliberately outside .container: full viewport width gives the row more
-             room before it needs to scroll. The edge fade (CSS) + partial "peek" of
-             the next balloon signal there's more to scroll to when it doesn't fit. -->
-        <nav class="folder-highlights reveal-on-scroll" data-delay="100" aria-label="Browse the gallery by occasion">
-            <ul class="folder-highlights-track" id="folder-highlights-track">
+        <!-- What we make -->
+        <section class="ba-section ba-services" id="services" aria-labelledby="services-title">
+            <div class="ba-wrap">
+                <header class="ba-section-head reveal-on-scroll">
+                    <p class="ba-eyebrow">What we make</p>
+                    <h2 id="services-title" class="ba-h2">Balloons with <span class="ba-script">personality</span></h2>
+                    <p class="ba-sub">From a first-birthday tower to a grand arched entrance, every display is styled around your colours, your names and your day.</p>
+                </header>
+
+                <ul class="ba-cards">
+                    <li class="ba-card reveal-on-scroll">
+                        <figure class="ba-arch"><img src="assets/images/web/svc-number-tower.jpg" width="720" height="1280" loading="lazy" decoding="async" alt="Pink number 1 balloon tower with a rainbow and bow"></figure>
+                        <h3>Number towers &amp; birthday displays</h3>
+                        <p>Show-stopping numbers, characters and bouquets for birthdays of every age.</p>
+                    </li>
+                    <li class="ba-card reveal-on-scroll" data-delay="100">
+                        <figure class="ba-arch"><img src="assets/images/web/svc-arch.jpg" width="720" height="1280" loading="lazy" decoding="async" alt="Pink, lilac and peach balloon arch in a hall doorway"></figure>
+                        <h3>Arches &amp; columns</h3>
+                        <p>Grand entrances for parties, schools, clubs and community events.</p>
+                    </li>
+                    <li class="ba-card reveal-on-scroll" data-delay="200">
+                        <figure class="ba-arch"><img src="assets/images/web/svc-bubble.jpg" width="720" height="1280" loading="lazy" decoding="async" alt="Clear personalised bubble balloon with balloons inside for a christening"></figure>
+                        <h3>Personalised bubble balloons</h3>
+                        <p>Clear balloons with names, dates and messages, made just for them.</p>
+                    </li>
+                    <li class="ba-card reveal-on-scroll">
+                        <figure class="ba-arch"><img src="assets/images/web/svc-welcome-sign.jpg" width="720" height="1280" loading="lazy" decoding="async" alt="Round welcome sign on an easel with pink and cream balloons"></figure>
+                        <h3>Welcome signs &amp; easels</h3>
+                        <p>Custom signs framed with soft balloon clusters for christenings and celebrations.</p>
+                    </li>
+                    <li class="ba-card reveal-on-scroll" data-delay="100">
+                        <figure class="ba-arch"><img src="assets/images/web/svc-new-baby.jpg" width="720" height="1280" loading="lazy" decoding="async" alt="Welcome to the world foil balloon with lilac balloons and a sunshine balloon"></figure>
+                        <h3>New baby &amp; welcome displays</h3>
+                        <p>Soft pastel displays to welcome a new arrival.</p>
+                    </li>
+                    <li class="ba-card reveal-on-scroll" data-delay="200">
+                        <figure class="ba-arch"><img src="assets/images/web/svc-communion.jpg" width="720" height="1280" loading="lazy" decoding="async" alt="Gold cross foil balloon display for a First Holy Communion"></figure>
+                        <h3>Communions &amp; confirmations</h3>
+                        <p>Elegant keepsake displays for faith milestones.</p>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Gallery (powered by scripts/main.js and assets/images/manifest.js; markup unchanged) -->
+        <!--
+        Gallery Setup - fully automatic:
+        • Drop new photos straight into the matching folder, e.g. assets/images/birthdays/
+        • Commit + push - a GitHub Action regenerates assets/images/manifest.js + manifest.json for you
+        • A category's balloon only appears once it has a photo in it
+        • Category folders are fixed in scripts/generate-manifest.js + index.html (data-category attributes)
+        • Balloon cover pictures live in assets/images/web/cover-<category>.jpg (falls back to the folder's first photo)
+        -->
+        <section id="gallery" class="ba-section ba-gallery" aria-labelledby="gallery-title">
+            <div class="ba-wrap">
+                <header class="ba-section-head reveal-on-scroll">
+                    <p class="ba-eyebrow">The gallery</p>
+                    <h2 id="gallery-title" class="ba-h2">Pick a <span class="ba-script">balloon</span></h2>
+                    <p class="ba-sub">Tap an occasion to browse our latest creations.</p>
+                </header>
+            </div>
+
+            <nav class="folder-highlights reveal-on-scroll" data-delay="100" aria-label="Browse the gallery by occasion">
+                <ul class="folder-highlights-track" id="folder-highlights-track">
                     <li class="folder-highlights-item">
                         <button type="button" class="folder-balloon folder-balloon--birthdays" data-category="birthdays">
-                            <span class="folder-balloon-visual">
-                                <span class="folder-balloon-shape">
-                                    <img class="folder-balloon-thumb" alt="" loading="lazy" decoding="async">
-                                </span>
-                                <span class="folder-balloon-knot" aria-hidden="true"></span>
-                            </span>
-                            <span class="folder-balloon-caption">
-                                <span class="folder-balloon-emoji" aria-hidden="true">🎂</span>
-                                <span class="folder-balloon-label">Birthdays</span>
-                            </span>
+                            <span class="folder-balloon-visual"><span class="folder-balloon-shape"><img class="folder-balloon-thumb" alt="" loading="lazy" decoding="async"></span><span class="folder-balloon-knot" aria-hidden="true"></span></span>
+                            <span class="folder-balloon-caption"><span class="folder-balloon-emoji" aria-hidden="true">🎂</span><span class="folder-balloon-label">Birthdays</span></span>
                         </button>
                     </li>
                     <li class="folder-highlights-item">
                         <button type="button" class="folder-balloon folder-balloon--christenings" data-category="christenings">
-                            <span class="folder-balloon-visual">
-                                <span class="folder-balloon-shape">
-                                    <img class="folder-balloon-thumb" alt="" loading="lazy" decoding="async">
-                                </span>
-                                <span class="folder-balloon-knot" aria-hidden="true"></span>
-                            </span>
-                            <span class="folder-balloon-caption">
-                                <span class="folder-balloon-emoji" aria-hidden="true">⛪️</span>
-                                <span class="folder-balloon-label">Christenings</span>
-                            </span>
+                            <span class="folder-balloon-visual"><span class="folder-balloon-shape"><img class="folder-balloon-thumb" alt="" loading="lazy" decoding="async"></span><span class="folder-balloon-knot" aria-hidden="true"></span></span>
+                            <span class="folder-balloon-caption"><span class="folder-balloon-emoji" aria-hidden="true">⛪️</span><span class="folder-balloon-label">Christenings</span></span>
                         </button>
                     </li>
                     <li class="folder-highlights-item">
                         <button type="button" class="folder-balloon folder-balloon--special-days" data-category="special-days">
-                            <span class="folder-balloon-visual">
-                                <span class="folder-balloon-shape">
-                                    <img class="folder-balloon-thumb" alt="" loading="lazy" decoding="async">
-                                </span>
-                                <span class="folder-balloon-knot" aria-hidden="true"></span>
-                            </span>
-                            <span class="folder-balloon-caption">
-                                <span class="folder-balloon-emoji" aria-hidden="true">💫</span>
-                                <span class="folder-balloon-label">Special Days</span>
-                            </span>
+                            <span class="folder-balloon-visual"><span class="folder-balloon-shape"><img class="folder-balloon-thumb" alt="" loading="lazy" decoding="async"></span><span class="folder-balloon-knot" aria-hidden="true"></span></span>
+                            <span class="folder-balloon-caption"><span class="folder-balloon-emoji" aria-hidden="true">💫</span><span class="folder-balloon-label">Special Days</span></span>
                         </button>
                     </li>
                     <li class="folder-highlights-item">
                         <button type="button" class="folder-balloon folder-balloon--events" data-category="events">
-                            <span class="folder-balloon-visual">
-                                <span class="folder-balloon-shape">
-                                    <img class="folder-balloon-thumb" alt="" loading="lazy" decoding="async">
-                                </span>
-                                <span class="folder-balloon-knot" aria-hidden="true"></span>
-                            </span>
-                            <span class="folder-balloon-caption">
-                                <span class="folder-balloon-emoji" aria-hidden="true">🗓️🎈</span>
-                                <span class="folder-balloon-label">Events</span>
-                            </span>
+                            <span class="folder-balloon-visual"><span class="folder-balloon-shape"><img class="folder-balloon-thumb" alt="" loading="lazy" decoding="async"></span><span class="folder-balloon-knot" aria-hidden="true"></span></span>
+                            <span class="folder-balloon-caption"><span class="folder-balloon-emoji" aria-hidden="true">🗓️🎈</span><span class="folder-balloon-label">Events</span></span>
                         </button>
                     </li>
                     <li class="folder-highlights-item">
                         <button type="button" class="folder-balloon folder-balloon--weddings" data-category="weddings">
-                            <span class="folder-balloon-visual">
-                                <span class="folder-balloon-shape">
-                                    <img class="folder-balloon-thumb" alt="" loading="lazy" decoding="async">
-                                </span>
-                                <span class="folder-balloon-knot" aria-hidden="true"></span>
-                            </span>
-                            <span class="folder-balloon-caption">
-                                <span class="folder-balloon-emoji" aria-hidden="true">🤍</span>
-                                <span class="folder-balloon-label">Weddings</span>
-                            </span>
+                            <span class="folder-balloon-visual"><span class="folder-balloon-shape"><img class="folder-balloon-thumb" alt="" loading="lazy" decoding="async"></span><span class="folder-balloon-knot" aria-hidden="true"></span></span>
+                            <span class="folder-balloon-caption"><span class="folder-balloon-emoji" aria-hidden="true">🤍</span><span class="folder-balloon-label">Weddings</span></span>
                         </button>
                     </li>
                     <li class="folder-highlights-item">
                         <button type="button" class="folder-balloon folder-balloon--easter" data-category="easter">
-                            <span class="folder-balloon-visual">
-                                <span class="folder-balloon-shape">
-                                    <img class="folder-balloon-thumb" alt="" loading="lazy" decoding="async">
-                                </span>
-                                <span class="folder-balloon-knot" aria-hidden="true"></span>
-                            </span>
-                            <span class="folder-balloon-caption">
-                                <span class="folder-balloon-emoji" aria-hidden="true">🐣</span>
-                                <span class="folder-balloon-label">Easter</span>
-                            </span>
+                            <span class="folder-balloon-visual"><span class="folder-balloon-shape"><img class="folder-balloon-thumb" alt="" loading="lazy" decoding="async"></span><span class="folder-balloon-knot" aria-hidden="true"></span></span>
+                            <span class="folder-balloon-caption"><span class="folder-balloon-emoji" aria-hidden="true">🐣</span><span class="folder-balloon-label">Easter</span></span>
                         </button>
                     </li>
                     <li class="folder-highlights-item">
                         <button type="button" class="folder-balloon folder-balloon--christmas" data-category="christmas">
-                            <span class="folder-balloon-visual">
-                                <span class="folder-balloon-shape">
-                                    <img class="folder-balloon-thumb" alt="" loading="lazy" decoding="async">
-                                </span>
-                                <span class="folder-balloon-knot" aria-hidden="true"></span>
-                            </span>
-                            <span class="folder-balloon-caption">
-                                <span class="folder-balloon-emoji" aria-hidden="true">🎄</span>
-                                <span class="folder-balloon-label">Christmas</span>
-                            </span>
+                            <span class="folder-balloon-visual"><span class="folder-balloon-shape"><img class="folder-balloon-thumb" alt="" loading="lazy" decoding="async"></span><span class="folder-balloon-knot" aria-hidden="true"></span></span>
+                            <span class="folder-balloon-caption"><span class="folder-balloon-emoji" aria-hidden="true">🎄</span><span class="folder-balloon-label">Christmas</span></span>
                         </button>
                     </li>
                     <li class="folder-highlights-item">
                         <button type="button" class="folder-balloon folder-balloon--halloween" data-category="halloween">
-                            <span class="folder-balloon-visual">
-                                <span class="folder-balloon-shape">
-                                    <img class="folder-balloon-thumb" alt="" loading="lazy" decoding="async">
-                                </span>
-                                <span class="folder-balloon-knot" aria-hidden="true"></span>
-                            </span>
-                            <span class="folder-balloon-caption">
-                                <span class="folder-balloon-emoji" aria-hidden="true">🎃</span>
-                                <span class="folder-balloon-label">Halloween</span>
-                            </span>
+                            <span class="folder-balloon-visual"><span class="folder-balloon-shape"><img class="folder-balloon-thumb" alt="" loading="lazy" decoding="async"></span><span class="folder-balloon-knot" aria-hidden="true"></span></span>
+                            <span class="folder-balloon-caption"><span class="folder-balloon-emoji" aria-hidden="true">🎃</span><span class="folder-balloon-label">Halloween</span></span>
                         </button>
                     </li>
                 </ul>
             </nav>
-    </section>
+        </section>
 
-    <!-- About Section -->
-    <section id="about" class="about-section">
-        <div class="container">
-            <div class="section-header reveal-on-scroll">
-                <h2 class="section-title">About</h2>
+        <!-- Photo band + call to action -->
+        <section class="ba-band" aria-labelledby="band-title">
+            <img src="assets/images/web/band-rainbow-arch.jpg" width="900" height="506" loading="lazy" decoding="async" alt="Pastel rainbow balloon arch with letter blocks">
+            <div class="ba-band-card reveal-on-scroll">
+                <h2 id="band-title" class="ba-h2">Planning something <span class="ba-script">special?</span></h2>
+                <p>Tell us the date, the colours and the vibe, and we'll bring it to life.</p>
+                <a class="ba-btn ba-btn--primary" href="https://wa.me/message/CKBDTBC5XFASL1" target="_blank" rel="noopener noreferrer">Start a chat</a>
             </div>
-            
-            <div class="about-card reveal-on-scroll" data-delay="200">
-                <p class="about-text">Balloon Artist in West Cork 🎈</p>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Contact Section -->
-    <section id="contact" class="contact-section">
-        <div class="container">
-            <div class="section-header reveal-on-scroll">
-                <h2 class="section-title">Contact Us</h2>
+        <!-- About -->
+        <!-- NOTE FOR OWNER: the wording in this section is a first draft written from your site and photos. Please edit it to your own voice. -->
+        <section class="ba-section ba-about" id="about" aria-labelledby="about-title">
+            <div class="ba-wrap ba-about-grid">
+                <div class="ba-about-art reveal-on-scroll">
+                    <figure class="ba-arch"><img src="assets/images/web/hero-communion-hoop.jpg" width="720" height="1280" loading="lazy" decoding="async" alt="White and gold balloon hoop display"></figure>
+                    <div class="ba-badge ba-badge--small"><img src="assets/images/web/logo-480.png" width="480" height="480" loading="lazy" decoding="async" alt="The Balloon Attic West Cork"></div>
+                </div>
+                <div class="ba-about-copy reveal-on-scroll" data-delay="100">
+                    <p class="ba-eyebrow">About The Balloon Attic</p>
+                    <h2 id="about-title" class="ba-h2">Balloon artistry in <span class="ba-script">West Cork</span></h2>
+                    <p>The Balloon Attic is a West Cork balloon artist creating bespoke displays for life's big and small celebrations.</p>
+                    <p>From a first-birthday tower to a christening easel, a communion hoop or a grand arch for a community event, each piece is designed around your colours, your names and your day.</p>
+                    <ul class="ba-chips" aria-label="Highlights">
+                        <li>Personalised to order</li>
+                        <li>Colours to match your theme</li>
+                        <li>Made in West Cork</li>
+                    </ul>
+                </div>
             </div>
-            
-            <div class="contact-card reveal-on-scroll" data-delay="200">
-                <div class="contact-content">
-                    <p class="contact-text">Send us a message</p>
-                    <div class="contact-buttons">
-                        <a href="https://www.instagram.com/theballoonatticwestcork/" target="_blank" rel="noopener noreferrer" class="contact-button instagram-button">
-                            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                            </svg>
-                            <span>On Instagram</span>
+        </section>
+
+        <!-- Contact -->
+        <section class="ba-section ba-contact" id="contact" aria-labelledby="contact-title">
+            <div class="ba-wrap">
+                <div class="ba-contact-card reveal-on-scroll">
+                    <p class="ba-eyebrow">Get in touch</p>
+                    <h2 id="contact-title" class="ba-h2">Let's plan something <span class="ba-script">magical</span></h2>
+                    <p class="ba-sub">Send us a message with your date, location and ideas. We'd love to hear about your celebration.</p>
+                    <div class="ba-contact-buttons">
+                        <a class="ba-btn ba-btn--primary" href="https://wa.me/message/CKBDTBC5XFASL1" target="_blank" rel="noopener noreferrer">
+                            <svg width="22" height="22" viewBox="0 0 720 720" fill="currentColor" aria-hidden="true"><path d="M360,0C161.18,0,0,161.18,0,360c0,65.41,17.45,126.75,47.94,179.61L0,720l187.02-44.21c51.34,28.18,110.28,44.21,172.98,44.21,198.82,0,360-161.18,360-360S558.82,0,360,0ZM360,655.52c-60.17,0-116.13-17.98-162.82-48.87l-110.49,28.14,30.99-105.61c-33.53-47.93-53.2-106.26-53.2-169.19,0-163.21,132.31-295.52,295.52-295.52s295.52,132.31,295.52,295.52-132.31,295.52-295.52,295.52Z"/><path d="M444.35,407.52l87.1,41.06c4,1.88,6.56,5.94,6.2,10.34-.94,11.46-5.54,34.43-26.13,55.02-58.12,58.12-162.49-7.64-166.74-10.18-25.67-13.79-50.06-32.24-73.19-55.36-23.12-23.12-41.58-47.52-55.37-73.19-2.55-4.24-68.31-108.61-10.18-166.74,20.59-20.59,43.56-25.19,55.02-26.13,4.41-.36,8.46,2.2,10.34,6.2l41.07,87.1c1.94,4.12,1.09,9.02-2.13,12.24l-30.61,30.61c-6.62,6.62-8.56,16.93-4,25.11,11.17,20.03,26.19,39.32,43.59,57.07,17.75,17.4,37.04,32.43,57.07,43.59,8.18,4.56,18.48,2.62,25.11-4l30.61-30.61c3.22-3.22,8.12-4.08,12.24-2.13Z"/></svg>
+                            WhatsApp
                         </a>
-                        <a href="https://wa.me/message/CKBDTBC5XFASL1" target="_blank" rel="noopener noreferrer" class="contact-button whatsapp-button">
-                            <svg width="28" height="28" viewBox="0 0 720 720" fill="currentColor">
-                                <path d="M360,0C161.18,0,0,161.18,0,360c0,65.41,17.45,126.75,47.94,179.61L0,720l187.02-44.21c51.34,28.18,110.28,44.21,172.98,44.21,198.82,0,360-161.18,360-360S558.82,0,360,0ZM360,655.52c-60.17,0-116.13-17.98-162.82-48.87l-110.49,28.14,30.99-105.61c-33.53-47.93-53.2-106.26-53.2-169.19,0-163.21,132.31-295.52,295.52-295.52s295.52,132.31,295.52,295.52-132.31,295.52-295.52,295.52Z"/>
-                                <path d="M444.35,407.52l87.1,41.06c4,1.88,6.56,5.94,6.2,10.34-.94,11.46-5.54,34.43-26.13,55.02-58.12,58.12-162.49-7.64-166.74-10.18-25.67-13.79-50.06-32.24-73.19-55.36-23.12-23.12-41.58-47.52-55.37-73.19-2.55-4.24-68.31-108.61-10.18-166.74,20.59-20.59,43.56-25.19,55.02-26.13,4.41-.36,8.46,2.2,10.34,6.2l41.07,87.1c1.94,4.12,1.09,9.02-2.13,12.24l-30.61,30.61c-6.62,6.62-8.56,16.93-4,25.11,11.17,20.03,26.19,39.32,43.59,57.07,17.75,17.4,37.04,32.43,57.07,43.59,8.18,4.56,18.48,2.62,25.11-4l30.61-30.61c3.22-3.22,8.12-4.08,12.24-2.13Z"/>
-                            </svg>
-                            <span>On WhatsApp</span>
+                        <a class="ba-btn ba-btn--ghost" href="https://www.instagram.com/theballoonatticwestcork/" target="_blank" rel="noopener noreferrer">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                            Instagram
+                        </a>
+                        <a class="ba-btn ba-btn--ghost" href="mailto:balloonatticwestcork@icloud.com?subject=Balloon%20Enquiry">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3.5 7l8.5 6 8.5-6"/></svg>
+                            Email
                         </a>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
     </main>
 
     <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <p class="footer-text">© <span id="current-year"></span> The Balloon Attic. All rights reserved.</p>
+    <footer class="ba-footer">
+        <div class="ba-wrap ba-footer-inner">
+            <img class="ba-footer-logo" src="assets/images/web/logo-160.png" width="160" height="160" loading="lazy" decoding="async" alt="The Balloon Attic West Cork logo">
+            <p class="ba-footer-tag">Balloon artist in West Cork 🎈</p>
+            <nav class="ba-footer-nav" aria-label="Footer">
+                <a href="#gallery">Gallery</a>
+                <a href="#services">What we make</a>
+                <a href="#about">About</a>
+                <a href="#contact">Contact</a>
+            </nav>
+            <p class="ba-footer-copy">&copy; <span id="current-year"></span> The Balloon Attic. All rights reserved.</p>
         </div>
     </footer>
 
-    <!-- Image Modal with Navigation -->
+    <!-- Image Modal with Navigation (used by the gallery - markup unchanged) -->
     <div id="image-modal" class="modal" role="dialog" aria-modal="true" aria-label="Image viewer">
         <button type="button" class="modal-close" aria-label="Close image">&times;</button>
         <button class="modal-nav modal-nav-prev" id="modal-prev" aria-label="Previous image">
@@ -435,10 +401,7 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
 
-    <!-- Category Grid View — reused across every folder highlight. Opened from
-         the grid-toggle button above; shows every photo in whichever category
-         is currently open in #image-modal, so there's one shared implementation
-         rather than one per category. -->
+    <!-- Category Grid View - reused across every folder highlight -->
     <div id="category-grid-modal" class="grid-modal" role="dialog" aria-modal="true" aria-label="All photos in this category">
         <div class="grid-modal-content">
             <button type="button" class="grid-modal-close" id="grid-modal-close" aria-label="Close grid view">
@@ -452,13 +415,14 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 
     <!-- Scripts -->
-    <!-- Auto-generated by scripts/generate-manifest.js — must load before main.js -->
+    <!-- Auto-generated by scripts/generate-manifest.js - must load before main.js -->
     <script src="assets/images/manifest.js"></script>
     <script src="scripts/main.js"></script>
+    <script src="scripts/redesign.js"></script>
 
     <!-- Floating WhatsApp Button -->
-    <a href="https://wa.me/message/CKBDTBC5XFASL1" target="_blank" rel="noopener noreferrer" class="whatsapp-floating-btn" title="Chat with us on WhatsApp">
-        <svg width="24" height="24" viewBox="0 0 720 720" fill="currentColor">
+    <a href="https://wa.me/message/CKBDTBC5XFASL1" target="_blank" rel="noopener noreferrer" class="whatsapp-floating-btn" title="Chat with us on WhatsApp" aria-label="Chat with us on WhatsApp">
+        <svg width="24" height="24" viewBox="0 0 720 720" fill="currentColor" aria-hidden="true">
             <path d="M360,0C161.18,0,0,161.18,0,360c0,65.41,17.45,126.75,47.94,179.61L0,720l187.02-44.21c51.34,28.18,110.28,44.21,172.98,44.21,198.82,0,360-161.18,360-360S558.82,0,360,0ZM360,655.52c-60.17,0-116.13-17.98-162.82-48.87l-110.49,28.14,30.99-105.61c-33.53-47.93-53.2-106.26-53.2-169.19,0-163.21,132.31-295.52,295.52-295.52s295.52,132.31,295.52,295.52-132.31,295.52-295.52,295.52Z"/>
             <path d="M444.35,407.52l87.1,41.06c4,1.88,6.56,5.94,6.2,10.34-.94,11.46-5.54,34.43-26.13,55.02-58.12,58.12-162.49-7.64-166.74-10.18-25.67-13.79-50.06-32.24-73.19-55.36-23.12-23.12-41.58-47.52-55.37-73.19-2.55-4.24-68.31-108.61-10.18-166.74,20.59-20.59,43.56-25.19,55.02-26.13,4.41-.36,8.46,2.2,10.34,6.2l41.07,87.1c1.94,4.12,1.09,9.02-2.13,12.24l-30.61,30.61c-6.62,6.62-8.56,16.93-4,25.11,11.17,20.03,26.19,39.32,43.59,57.07,17.75,17.4,37.04,32.43,57.07,43.59,8.18,4.56,18.48,2.62,25.11-4l30.61-30.61c3.22-3.22,8.12-4.08,12.24-2.13Z"/>
         </svg>
