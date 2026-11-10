@@ -536,9 +536,9 @@ html { scroll-padding-top: calc(var(--ba-header-h) + 8px); }
 .ba-band > img {
     display: block;
     width: 100%;
-    height: clamp(300px, 60vw, 460px);
+    height: clamp(300px, 56vw, 600px);
     object-fit: cover;
-    object-position: 50% 20%;
+    object-position: 50% 30%;
 }
 .ba-band-card {
     position: relative;
