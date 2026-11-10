@@ -209,7 +209,7 @@ function initializeImageGallery() {
                 thumb.addEventListener('error', () => {
                     if (!thumb.src.endsWith(fallbackSrc)) thumb.src = fallbackSrc;
                 }, { once: true });
-                thumb.src = `assets/images/web/cover-${category}.jpg`;
+                thumb.src = `assets/images/web/cover-${category}.jpg?v=20261110c`;
             }
 
             const shape = button.querySelector('.folder-balloon-shape');
