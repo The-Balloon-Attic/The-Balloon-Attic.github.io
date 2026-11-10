@@ -877,14 +877,25 @@ html { scroll-padding-top: calc(var(--ba-header-h) + 8px); }
 .ba-gallery .folder-balloon:hover,
 .ba-gallery .folder-balloon:focus-visible { transform: translateY(-4px); }
 
-.ba-gallery .folder-balloon-visual { display: block; animation: none; }
+/* Tile height comes from padding (a 4:5 box) instead of aspect-ratio, which
+   some phone browsers ignore on elements inside a <button>. */
+.ba-gallery .folder-balloon-visual {
+    display: block;
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 125%;
+    animation: none;
+}
 .ba-gallery .folder-balloon-knot,
 .ba-gallery .folder-balloon-shape::before { display: none; }
 
 .ba-gallery .folder-balloon-shape {
+    position: absolute;
+    inset: 0;
     width: 100%;
-    height: auto;
-    aspect-ratio: 4 / 5;
+    height: 100%;
+    margin: 0;
     border-radius: 22px;
     background: #f3dfe3;
     border: 2px solid rgba(255, 255, 255, 0.85);
