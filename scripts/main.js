@@ -429,9 +429,9 @@ function initializeImageGallery() {
         modalContent.style.transition = 'none';
         modalContent.style.transformOrigin = 'center center';
         modalContent.style.transform = `translate(${dx}px, ${dy}px) scale(${scaleX}, ${scaleY})`;
-        // Matches .folder-balloon-shape's rounding, so the box reads as the
+        // Matches the gallery tile's rounding, so the box reads as the
         // same object as it morphs into a plain rectangle.
-        modalContent.style.borderRadius = '50% 50% 50% 50% / 35% 35% 65% 65%';
+        modalContent.style.borderRadius = '22px';
         modalContent.style.background = `center / cover no-repeat url("${thumbSrc}")`;
         modalContent.style.filter = 'blur(5px)';
 

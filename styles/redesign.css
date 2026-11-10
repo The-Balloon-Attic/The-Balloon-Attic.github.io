@@ -840,3 +840,104 @@ html { scroll-padding-top: calc(var(--ba-header-h) + 8px); }
 }
 .ba-gallery .folder-balloon.has-photos .folder-balloon-thumb.thumb-loaded { opacity: 0.85; }
 .ba-gallery .folder-balloon-shape::before { width: 22%; height: 34%; top: 8%; left: 17%; opacity: 0.95; }
+
+
+/* ---------- Gallery: photo tiles ----------
+   Replaces the balloon shapes with rounded photo tiles and a frosted label
+   pill. Same markup and script hooks as before, so categories still appear
+   only once they have a photo, and tapping one still opens its lightbox. */
+.ba-gallery .folder-highlights-track {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.8rem;
+    max-width: 560px;
+    margin-inline: auto;
+    padding: 0.5rem 1rem 0;
+    overflow: visible;
+}
+@media (min-width: 760px) {
+    .ba-gallery .folder-highlights-track {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 1.1rem;
+        max-width: 1120px;
+    }
+}
+
+.ba-gallery .folder-highlights-item { width: 100%; }
+
+.ba-gallery .folder-balloon {
+    position: relative;
+    display: block;
+    width: 100%;
+    padding: 0;
+    gap: 0;
+    border-radius: 22px;
+    transition: transform 0.35s ease;
+}
+.ba-gallery .folder-balloon:hover,
+.ba-gallery .folder-balloon:focus-visible { transform: translateY(-4px); }
+
+.ba-gallery .folder-balloon-visual { display: block; animation: none; }
+.ba-gallery .folder-balloon-knot,
+.ba-gallery .folder-balloon-shape::before { display: none; }
+
+.ba-gallery .folder-balloon-shape {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    border-radius: 22px;
+    background: #f3dfe3;
+    border: 2px solid rgba(255, 255, 255, 0.85);
+    box-shadow: 0 14px 26px -14px rgba(91, 58, 86, 0.5);
+    transition: box-shadow 0.35s ease;
+}
+.ba-gallery .folder-balloon:hover .folder-balloon-shape,
+.ba-gallery .folder-balloon:focus-visible .folder-balloon-shape {
+    transform: none;
+    box-shadow: 0 20px 30px -14px rgba(91, 58, 86, 0.55);
+}
+.ba-gallery .folder-balloon:active .folder-balloon-shape { transform: scale(0.98); }
+
+.ba-gallery .folder-balloon.has-photos .folder-balloon-shape::after {
+    opacity: 1;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0) 55%, rgba(91, 58, 86, 0.22) 100%);
+}
+
+.ba-gallery .folder-balloon-thumb {
+    object-position: 50% 30%;
+    transition: opacity 0.5s ease, transform 0.6s ease;
+}
+.ba-gallery .folder-balloon.has-photos .folder-balloon-thumb.thumb-loaded { opacity: 1; }
+.ba-gallery .folder-balloon:hover .folder-balloon-thumb { transform: scale(1.05); }
+
+/* Frosted label pill across the bottom of the tile */
+.ba-gallery .folder-balloon-caption {
+    position: absolute;
+    left: 0.6rem;
+    right: 0.6rem;
+    bottom: 0.65rem;
+    margin: 0;
+    flex-direction: row;
+    justify-content: center;
+    gap: 0.45rem;
+    padding: 0.5rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(255, 246, 247, 0.88);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 6px 14px -8px rgba(91, 58, 86, 0.5);
+    color: var(--ba-plum);
+}
+.ba-gallery .folder-balloon-emoji {
+    display: inline-flex;
+    width: 1.3rem;
+    height: 1.3rem;
+    filter: none;
+}
+.ba-gallery .folder-balloon-emoji svg { width: 100%; height: 100%; }
+.ba-gallery .folder-balloon-label {
+    font-size: clamp(0.92rem, 3.7vw, 1.15rem);
+    white-space: nowrap;
+}
+.ba-gallery .folder-balloon:hover .folder-balloon-caption,
+.ba-gallery .folder-balloon:focus-visible .folder-balloon-caption { color: var(--ba-raspberry); }
