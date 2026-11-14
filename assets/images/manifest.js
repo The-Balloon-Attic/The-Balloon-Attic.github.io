@@ -40,7 +40,8 @@ window.__GALLERY_MANIFEST__ = {
     "IMG_7323.jpeg",
     "IMG_7324.jpeg",
     "IMG_8020.jpeg",
-    "IMG_8587.jpeg"
+    "IMG_8587.jpeg",
+    "IMG_lauren_christening_star.jpeg"
   ],
   "special-days": [
     "IMG_0580.jpeg",
