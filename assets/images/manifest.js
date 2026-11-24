@@ -30,6 +30,7 @@ window.__GALLERY_MANIFEST__ = {
     "IMG_7913.jpeg"
   ],
   "christenings": [
+    "ada-christening-balloons.jpeg",
     "IMG_1274.jpeg",
     "IMG_1337.jpeg",
     "IMG_2460.jpeg",
